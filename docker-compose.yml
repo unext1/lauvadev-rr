@@ -6,7 +6,9 @@ services:
     container_name: lauva_website
     restart: unless-stopped
     environment:
-      RESEND_API_KEY: ${RESEND_API_KEY}
+      SESSION_SECRET: ${SESSION_SECRET}
+      TOTP_SECRET: ${TOTP_SECRET}
+      CSRF_SECRET: ${CSRF_SECRET}
     networks:
       - proxy
       

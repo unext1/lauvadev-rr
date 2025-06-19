@@ -9,7 +9,7 @@ pnpm build
 # SSH into the server and run commands
 ssh oracle <<EOF
   echo "Connected to server"
-  cd lauvadev
+  cd lauvadev-rr
   git pull
   docker-compose build
   docker-compose up -d
