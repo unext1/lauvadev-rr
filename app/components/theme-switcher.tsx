@@ -1,7 +1,6 @@
 import { Computer, Moon, Sun } from 'lucide-react';
 import { href, useFetcher } from 'react-router';
 
-import { Button } from '~/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
