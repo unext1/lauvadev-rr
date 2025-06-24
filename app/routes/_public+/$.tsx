@@ -1,9 +1,14 @@
+import type { SEOHandle } from '@nasa-gcn/remix-seo';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router';
 import { DotPattern } from '~/components/dot-bg';
 import { Button } from '~/components/ui/button';
 import { cn } from '~/utils';
+
+export const handle: SEOHandle = {
+  getSitemapEntries: () => null
+};
 
 export function meta() {
   return [

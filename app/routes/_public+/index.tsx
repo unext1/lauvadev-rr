@@ -6,6 +6,7 @@ import { DotPattern } from '~/components/dot-bg';
 import { ThemeToggle } from '~/components/theme-switcher';
 import { Button } from '~/components/ui/button';
 import { cn } from '~/utils';
+import type { Route } from './+types';
 const Technology = ({ name }: { name: string }) => {
   return (
     <div className="hover:bg-muted/20 dark:hover:bg-muted/10 rounded-lg border border-border/10 p-3 transition-colors">
@@ -67,7 +68,6 @@ const useActiveSection = () => {
   return activeSection;
 };
 
-// Navigation items
 const navItems = [
   { name: 'work', href: '#work' },
   { name: 'about', href: '#about' },
@@ -75,12 +75,54 @@ const navItems = [
   { name: 'contact', href: '#contact' }
 ];
 
-export function meta() {
+export const meta: Route.MetaFunction = () => {
+  const title = 'Laurynas Valiulis | Portfolio';
+  const description =
+    'Laurynas Valiulis is a full stack dev crafting sleek, scalable sites with code & taste. Based in Sweden. Available for projects.';
+  const url = `https://lauva.dev`;
+
   return [
-    { title: 'Laurynas Valiulis - Portfolio' },
-    { name: 'description', content: 'Portfolio of Laurynas Valiulis' }
+    { title },
+    {
+      name: 'description',
+      content: description
+    },
+    {
+      property: 'og:title',
+      content: title
+    },
+    {
+      property: 'og:description',
+      content: description
+    },
+    { property: 'og:url', content: url },
+    {
+      name: 'twitter:title',
+      content: title
+    },
+    {
+      name: 'twitter:description',
+      content: description
+    },
+    {
+      tagName: 'link',
+      rel: 'canonical',
+      href: url
+    },
+    { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    { charSet: 'utf-8' },
+    { name: 'author', content: 'Laurynas Valiulis' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:site_name', content: 'Laurynas' },
+    { property: 'og:image', content: 'https://lauva.dev/meta.png' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:site', content: '@lauvadev' },
+    { name: 'twitter:creator', content: '@lauvadev' },
+    { name: 'twitter:image', content: 'https://lauva.dev/meta.png' },
+    { tagName: 'link', rel: 'icon', href: '/favicon.ico' }
   ];
-}
+};
 
 const Index = () => {
   const { scrollY } = useScroll();
