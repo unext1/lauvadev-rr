@@ -157,7 +157,7 @@ const Index = () => {
             {/* Left section - Logo */}
             <div className="flex justify-start">
               <motion.div
-                className={`h-10 py-2 px-4 rounded-full backdrop-blur-md border border-muted flex items-center`}
+                className={`h-10 py-2 px-4 rounded-full backdrop-blur-md bg-background/70 border border-muted flex items-center`}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
@@ -176,7 +176,7 @@ const Index = () => {
             {/* Middle section - Navigation */}
             <div className="flex justify-center">
               <motion.div
-                className={`h-10 hidden md:flex items-center gap-8 py-2 px-8 rounded-full backdrop-blur-md border border-muted`}
+                className={`h-10 hidden md:flex items-center gap-8 py-2 px-8 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
@@ -224,7 +224,7 @@ const Index = () => {
             {/* Right section - Email & Theme Toggle */}
             <div className="flex justify-end items-center gap-4">
               <motion.div
-                className={`h-10 hidden lg:flex items-center gap-3 py-2 px-5 rounded-full backdrop-blur-md border border-muted`}
+                className={`h-10 hidden lg:flex items-center gap-3 py-2 px-5 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
@@ -237,7 +237,7 @@ const Index = () => {
               </motion.div>
 
               <motion.div
-                className={`h-10 flex items-center justify-center p-2 rounded-full backdrop-blur-md border border-muted`}
+                className={`h-10 flex items-center justify-center p-2 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
@@ -246,7 +246,7 @@ const Index = () => {
 
               <div className="md:hidden relative">
                 <motion.div
-                  className={`h-10 flex items-center justify-center p-2 rounded-full backdrop-blur-md border border-muted`}
+                  className={`h-10 flex items-center justify-center p-2 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
                   whileHover={{ scale: 1.03 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                 >
@@ -282,7 +282,7 @@ const Index = () => {
                       animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
                       exit={{ opacity: 0, scale: 0.9, y: 10, x: 0 }}
                       transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className="md:hidden absolute right-0 origin-top bg-background/95 backdrop-blur-sm rounded-2xl border border-muted shadow-lg min-w-[200px] z-50 overflow-hidden"
+                      className="md:hidden absolute right-0 mt-2 origin-top bg-background/95 backdrop-blur-sm rounded-2xl border border-muted shadow-lg min-w-[200px] z-50 overflow-hidden"
                       style={{ transformOrigin: 'top right' }}
                     >
                       <nav className="flex flex-col py-4 px-6 gap-4">
@@ -453,7 +453,106 @@ const Index = () => {
             <span className="text-sm text-muted-foreground hidden md:block">selected projects</span>
           </motion.header>
 
-          {/* Project 1 */}
+          {/* Neuralfinity */}
+          <motion.div
+            className="mb-32"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <a
+              href="https://neuralfinity.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                  <div className="lg:col-span-5 z-10">
+                    <motion.div
+                      className="w-10 h-10 bg-[#2563EB]/5 rounded-xl flex items-center justify-center mb-8 shadow-sm"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Layers className="h-5 w-5 text-[#2563EB]/70" />
+                    </motion.div>
+
+                    <motion.h3
+                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      viewport={{ once: true }}
+                    >
+                      Neuralfinity
+                    </motion.h3>
+
+                    <motion.div
+                      className="flex items-center text-sm text-muted-foreground mb-8"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.3 }}
+                      viewport={{ once: true }}
+                    >
+                      <span className="uppercase tracking-wider">Contract Work</span>
+                      <span className="mx-2">•</span>
+                      <span>2024-2025</span>
+                    </motion.div>
+
+                    <motion.p
+                      className="text-lg text-muted-foreground mb-10"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      viewport={{ once: true }}
+                    >
+                      Built websites and internal tools for an AI platform startup Neuralfinity. Created modern
+                      dashboards and systems that make complex AI operations easy to use. Full stack development.
+                    </motion.p>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                      viewport={{ once: true }}
+                    >
+                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
+                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
+                          View project
+                        </span>
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
+                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
+                      </Button>
+                    </motion.div>
+                  </div>
+
+                  <div className="lg:col-span-7 z-10">
+                    <motion.div
+                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.9, delay: 0.2 }}
+                      viewport={{ once: true }}
+                      whileHover={{
+                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <img
+                        src="/neuralfinity.jpg"
+                        alt="Neuralfinity Platform"
+                        className="w-full h-full object-cover rounded-lg z-10"
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </motion.div>
+
+          {/* Emilis Jokūbas */}
           <motion.div
             className="mb-32"
             initial={{ opacity: 0, y: 50 }}
@@ -543,7 +642,7 @@ const Index = () => {
             </a>
           </motion.div>
 
-          {/* Project 2 */}
+          {/* Field Service App */}
           <motion.div
             className="mb-32"
             initial={{ opacity: 0, y: 50 }}
@@ -634,6 +733,185 @@ const Index = () => {
                         src="/fields.png"
                         alt="Field Service App"
                         className="w-full h-full object-cover rounded-lg z-10 "
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </motion.div>
+
+          {/* Home By Aurelija */}
+          <motion.div
+            className="mb-32"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <a
+              href="https://www.homebyaurelija.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                  <div className="lg:col-span-5 z-10">
+                    <motion.h3
+                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      viewport={{ once: true }}
+                    >
+                      Home By Aurelija
+                    </motion.h3>
+
+                    <motion.div
+                      className="flex items-center text-sm text-muted-foreground mb-8"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.3 }}
+                      viewport={{ once: true }}
+                    >
+                      <span className="uppercase tracking-wider">Client</span>
+                      <span className="mx-2">•</span>
+                      <span>2023</span>
+                    </motion.div>
+
+                    <motion.p
+                      className="text-lg text-muted-foreground mb-10"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      viewport={{ once: true }}
+                    >
+                      A portfolio website for an interior designer showcasing their work, services, and design
+                      philosophy. Features a clean, modern design that highlights the designer's projects and expertise.
+                    </motion.p>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                      viewport={{ once: true }}
+                    >
+                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
+                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
+                          View project
+                        </span>
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
+                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
+                      </Button>
+                    </motion.div>
+                  </div>
+
+                  <div className="lg:col-span-7 z-10">
+                    <motion.div
+                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.9, delay: 0.2 }}
+                      viewport={{ once: true }}
+                      whileHover={{
+                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <img
+                        src="/aurelija.jpg"
+                        alt="Home By Aurelija"
+                        className="w-full h-full object-cover rounded-lg z-10"
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </motion.div>
+
+          {/* Mėnulio Ritmu */}
+          <motion.div
+            className="mb-32"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <a
+              href="https://menulioritmu.lt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                  <div className="lg:col-span-5 z-10">
+                    <motion.h3
+                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      viewport={{ once: true }}
+                    >
+                      Mėnulio Ritmu
+                    </motion.h3>
+
+                    <motion.div
+                      className="flex items-center text-sm text-muted-foreground mb-8"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.3 }}
+                      viewport={{ once: true }}
+                    >
+                      <span className="uppercase tracking-wider">Client</span>
+                      <span className="mx-2">•</span>
+                      <span>2022</span>
+                    </motion.div>
+
+                    <motion.p
+                      className="text-lg text-muted-foreground mb-10"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      viewport={{ once: true }}
+                    >
+                      A specialized website focused on moon phases and their daily influences. Users can explore
+                      detailed descriptions and insights for each lunar phase, helping them align their activities with
+                      natural rhythms.
+                    </motion.p>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                      viewport={{ once: true }}
+                    >
+                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
+                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
+                          View project
+                        </span>
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
+                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
+                      </Button>
+                    </motion.div>
+                  </div>
+
+                  <div className="lg:col-span-7 z-10">
+                    <motion.div
+                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.9, delay: 0.2 }}
+                      viewport={{ once: true }}
+                      whileHover={{
+                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <img
+                        src="/menulio.jpg"
+                        alt="Menulio Ritmu"
+                        className="w-full h-full object-cover rounded-lg z-10"
                       />
                     </motion.div>
                   </div>
@@ -774,23 +1052,21 @@ const Index = () => {
                 viewport={{ once: true, margin: '-50px' }}
                 className="md:pt-[4.5rem]"
               >
-                <div className="[mask-image:radial-gradient(ellipse_100%_100%_at_50%_0%,#000_70%,transparent_100%)]">
-                  <div className="bg-muted/10 dark:bg-muted/5 rounded-2xl border border-border/10 p-4 shadow-lg">
-                    <h3 className="text-xl font-medium mb-4 px-2">technologies</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      <Technology name="React Router" />
-                      <Technology name="React" />
-                      <Technology name="TypeScript" />
-                      <Technology name="Node.js" />
-                      <Technology name="Tailwind" />
-                      <Technology name="Framer Motion" />
-                      <Technology name="Shadcn UI" />
-                      <Technology name="DrizzleORM" />
-                      <Technology name="Docker" />
-                      <Technology name="Better-Auth" />
-                      <Technology name="Next.js" />
-                      <Technology name="HTML" />
-                    </div>
+                <div className="bg-gradient-to-b from-muted/10 to-transparent border rounded-2xl p-4 border-border/10">
+                  <h3 className="text-xl font-medium mb-4 px-2">technologies</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <Technology name="React Router" />
+                    <Technology name="React" />
+                    <Technology name="TypeScript" />
+                    <Technology name="Node.js" />
+                    <Technology name="Tailwind" />
+                    <Technology name="Framer Motion" />
+                    <Technology name="Shadcn UI" />
+                    <Technology name="DrizzleORM" />
+                    <Technology name="Docker" />
+                    <Technology name="Better-Auth" />
+                    <Technology name="Next.js" />
+                    <Technology name="HTML" />
                   </div>
                 </div>
               </motion.div>
@@ -823,7 +1099,7 @@ const Index = () => {
                 <div className="md:text-right md:pr-16 pl-12 md:pl-0 relative">
                   <div className="absolute left-4 md:left-auto md:right-0 top-0 w-3 h-3 rounded-full bg-[#2563EB] translate-x-[-6.5px] md:translate-x-[6.5px]"></div>
                   <span className="text-sm text-[#2563EB] font-medium tracking-wider uppercase mb-2 block">
-                    2024 - Present
+                    2024 - 2025
                   </span>
                   <h3 className="text-2xl font-medium mb-3">Full-Stack Developer at Neuralfinity</h3>
                   <p className="text-muted-foreground">
