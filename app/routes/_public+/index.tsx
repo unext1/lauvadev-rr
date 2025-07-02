@@ -632,7 +632,7 @@ const Index = () => {
                       {/* Content */}
                       <img
                         src="/emilis.png"
-                        alt="Field Service App"
+                        alt="Emilis Jokūbas"
                         className="w-full h-full object-cover rounded-lg z-10 "
                       />
                     </motion.div>
