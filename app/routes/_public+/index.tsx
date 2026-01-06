@@ -153,7 +153,7 @@ const Index = () => {
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
-          <div className="grid grid-cols-3 items-center">
+          <div className="grid grid-cols-3 items-center gap-2 md:gap-4">
             {/* Left section - Logo */}
             <div className="flex justify-start">
               <motion.div
@@ -222,7 +222,7 @@ const Index = () => {
             </div>
 
             {/* Right section - Email & Theme Toggle */}
-            <div className="flex justify-end items-center gap-4">
+            <div className="flex justify-end items-center gap-2 md:gap-4">
               <motion.div
                 className={`h-10 hidden lg:flex items-center gap-3 py-2 px-5 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
                 whileHover={{ scale: 1.03 }}
@@ -237,7 +237,7 @@ const Index = () => {
               </motion.div>
 
               <motion.div
-                className={`h-10 flex items-center justify-center p-2 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
+                className={`h-9 w-9 flex items-center justify-center rounded-full backdrop-blur-md bg-background/70 border border-muted`}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
@@ -245,34 +245,28 @@ const Index = () => {
               </motion.div>
 
               <div className="md:hidden relative">
-                <motion.div
-                  className={`h-10 flex items-center justify-center p-2 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
+                <motion.button
+                  className={`h-9 w-9 flex items-center justify-center rounded-full backdrop-blur-md bg-background/70 border border-muted`}
                   whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 flex items-center justify-center"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  <motion.svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    <motion.svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d={isMobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
-                      />
-                    </motion.svg>
-                  </Button>
-                </motion.div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d={isMobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                    />
+                  </motion.svg>
+                </motion.button>
 
                 {/* Mobile menu */}
                 <AnimatePresence>
@@ -321,7 +315,13 @@ const Index = () => {
                           transition={{ duration: 0.2, delay: 0.25 }}
                           className="mt-2 pt-2 border-t border-border/10"
                         >
-                          <span className="text-sm text-muted-foreground block py-1.5">info@lauva.dev</span>
+                          <a
+                            href="mailto:info@lauva.dev"
+                            className="text-sm text-muted-foreground hover:text-blue-500 transition-colors block py-1.5"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            info@lauva.dev
+                          </a>
                         </motion.div>
                       </nav>
                     </motion.div>
@@ -543,6 +543,120 @@ const Index = () => {
                       <img
                         src="/neuralfinity.jpg"
                         alt="Neuralfinity Platform"
+                        className="w-full h-full object-cover rounded-lg z-10"
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </motion.div>
+
+          {/* Whop CRM */}
+          <motion.div
+            className="mb-32"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: 'easeOut' }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <a
+              href="https://whop.com/dashboard/biz_K1oZa8bZiNreSZ/app-store/apps/app_yGI58V5bhzIDJq/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                  <div className="lg:col-span-5 z-10">
+                    <motion.h3
+                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      viewport={{ once: true }}
+                    >
+                      Whop CRM
+                    </motion.h3>
+
+                    <motion.div
+                      className="flex items-center text-sm text-muted-foreground mb-8"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.3 }}
+                      viewport={{ once: true }}
+                    >
+                      <span className="uppercase tracking-wider">Personal Project</span>
+                      <span className="mx-2">•</span>
+                      <span>2025</span>
+                    </motion.div>
+
+                    <motion.p
+                      className="text-lg text-muted-foreground mb-4"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      viewport={{ once: true }}
+                    >
+                      A fast CRM for Whop creators and agencies. Built to track leads, deals, and tasks without the
+                      overhead of traditional CRMs. Includes a clear pipeline view (kanban board), activity timelines,
+                      and AI powered summaries to reduce manual tracking and context switching.
+                    </motion.p>
+
+                    <motion.div
+                      className="flex flex-wrap gap-2 mb-10 text-base text-muted-foreground"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                      viewport={{ once: true }}
+                    >
+                      <span className="font-medium">Built with:</span>
+                      <span>React Router v7</span>
+                      <span>•</span>
+                      <span>Whop API</span>
+                      <span>•</span>
+                      <span>Shadcn</span>
+                      <span>•</span>
+                      <span>Tailwind CSS</span>
+                      <span>•</span>
+                      <span>Turso DB</span>
+                      <span>•</span>
+                      <span>DrizzleORM</span>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.5 }}
+                      viewport={{ once: true }}
+                    >
+                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
+                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
+                          View project
+                        </span>
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
+                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
+                      </Button>
+                    </motion.div>
+                  </div>
+
+                  <div className="lg:col-span-7 z-10">
+                    <motion.div
+                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.9, delay: 0.2 }}
+                      viewport={{ once: true }}
+                      whileHover={{
+                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <video
+                        src="/short-demo.mov"
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
                         className="w-full h-full object-cover rounded-lg z-10"
                       />
                     </motion.div>
@@ -964,7 +1078,7 @@ const Index = () => {
               >
                 <div className="flex flex-col gap-6">
                   <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">
-                    I'm a 21 y/o developer with a strong expertise on frontend, backend, design, and devops. I crafting
+                    I'm a 22 y/o developer with a strong expertise on frontend, backend, design, and devops. I crafting
                     apps that scale, look good, run fast, and feel right.
                   </p>
                   <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">

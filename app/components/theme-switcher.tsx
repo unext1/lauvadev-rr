@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger
 } from '~/components/ui/dropdown-menu';
 import { useRootData } from '~/hooks/use-route-data-hook';
+import { cn } from '~/utils';
 
 const icons = {
   light: <Sun className="h-5 w-5" />,
@@ -18,7 +19,7 @@ const icons = {
 const themes = Object.keys(icons) as Array<keyof typeof icons>;
 type Theme = (typeof themes)[number];
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const data = useRootData();
   const theme = data?.colorScheme as Theme;
 
@@ -36,12 +37,17 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="outline-none border-none bg-transparent">
-          {icons[optimisticTheme]}
+        <button
+          className={cn(
+            'outline-none border-none bg-transparent w-full h-full flex items-center justify-center',
+            className
+          )}
+        >
+          <div className="w-5 h-5 flex items-center justify-center">{icons[optimisticTheme]}</div>
           <span className="sr-only">Toggle theme</span>
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="mt-6">
+      <DropdownMenuContent align="end" className="mt-2">
         {themes.map((key) => (
           <DropdownMenuItem
             key={key}
