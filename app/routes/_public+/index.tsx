@@ -561,7 +561,7 @@ const Index = () => {
             viewport={{ once: true, margin: '-100px' }}
           >
             <a
-              href="https://whop.com/dashboard/biz_K1oZa8bZiNreSZ/app-store/apps/app_yGI58V5bhzIDJq/"
+              href="https://whop.com/apps/app_yGI58V5bhzIDJq"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
