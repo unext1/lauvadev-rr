@@ -581,7 +581,7 @@ const Index = () => {
                       <TooltipTrigger>
                         <a
                           href="mailto:info@lauva.dev"
-                          className="order-2 inline-flex min-h-11 items-center px-2 font-mono text-xs tracking-wide text-muted-foreground transition-colors hover:text-foreground lg:order-1"
+                          className="order-2 inline-flex min-h-11 items-center font-mono text-xs tracking-wide text-muted-foreground transition-colors hover:text-foreground lg:order-1"
                         >
                           info@lauva.dev
                         </a>
