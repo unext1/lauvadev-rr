@@ -1,87 +1,82 @@
 import type { SEOHandle } from '@nasa-gcn/remix-seo';
-import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeftIcon } from '@phosphor-icons/react';
+import { motion } from 'motion/react';
 import { Link } from 'react-router';
-import { DotPattern } from '~/components/dot-bg';
-import { Button } from '~/components/ui/button';
-import { cn } from '~/utils';
+import { buttonVariants } from '~/components/ui/button';
 
 export const handle: SEOHandle = {
-  getSitemapEntries: () => null
+  getSitemapEntries: () => null,
 };
 
 export function meta() {
   return [
     { title: '404 - Page Not Found' },
-    { name: 'description', content: 'The page you are looking for does not exist.' }
+    { name: 'description', content: 'The page you are looking for does not exist.' },
   ];
 }
 
 export default function NotFoundPage() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-background selection:bg-blue-500/10 selection:text-blue-500">
-      {/* Background Pattern */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="absolute inset-0"
-      >
-        <DotPattern
-          width={24}
-          height={24}
-          className={cn(
-            'absolute inset-0 opacity-50 [mask-image:radial-gradient(600px_circle_at_center,white,transparent)]'
-          )}
-        />
-      </motion.div>
+    <div className="relative flex-1 flex flex-col bg-background">
+      <div className="flex-1 flexrelative m-4 flex flex-col overflow-hidden border bg-linear-to-b from-card to-background">
+        <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1  items-center justify-center px-6 py-16 text-center md:px-12">
+          <div className="">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-8"
+            >
+              <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">404 · Not Found</span>
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-display text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight text-foreground"
+            >
+              This page took a
+              <br />
+              <span className="text-muted-foreground">different route.</span>
+            </motion.h1>
 
-      {/* Gradient Spots */}
-      <div className="absolute -top-40 left-[20%] w-[40vw] h-[40vh] bg-blue-500/2 rounded-full blur-[120px] opacity-20" />
-      <div className="absolute bottom-40 right-[20%] w-[30vw] h-[30vh] bg-blue-500/2 rounded-full blur-[100px] opacity-20" />
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mx-auto mt-6 max-w-xl text-sm md:text-base text-muted-foreground"
+            >
+              The page you are looking for doesn&apos;t exist, was moved, or the link is outdated.
+            </motion.p>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
-          <span className="text-7xl md:text-8xl font-light text-blue-500/90">404</span>
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-10 flex justify-center"
+            >
+              <Link
+                to="/"
+                className={buttonVariants({
+                  variant: 'default',
+                  size: 'lg',
+                  className: 'group h-11 px-6 font-mono text-xs uppercase tracking-wide',
+                })}
+              >
+                <ArrowLeftIcon className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                Back to home
+              </Link>
+            </motion.div>
+          </div>
+        </div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl md:text-5xl font-normal tracking-tight text-foreground mb-6"
-        >
-          Page not found
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-lg text-muted-foreground mb-12"
-        >
-          The page you are looking for doesn't exist or has been moved.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex justify-center"
-        >
-          <Button variant="outline" size="lg" className="group relative overflow-hidden" asChild>
-            <Link to="/" className="flex items-center gap-2">
-              <ArrowLeft className="h-4 w-4 z-10 transition-transform group-hover:-translate-x-1 delay-200" />
-              <span className="relative z-10">Back to home</span>
-              <span className="absolute inset-0 bg-blue-500 translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
-            </Link>
-          </Button>
-        </motion.div>
+        <div className="relative z-10">
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-center px-6 py-6 md:px-12">
+            <span className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+              © {new Date().getFullYear()} Laurynas all rights reserved.
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
