@@ -82,6 +82,7 @@ const projects = [
     image: '/neuralfinity.webp',
     type: 'contract work',
     testimonial: true,
+    live: 'https://neuralfinity.com',
   },
   {
     number: '02',
@@ -95,6 +96,7 @@ const projects = [
     year: '2025',
     image: '/crm.webp',
     type: 'personal Project',
+    live: 'https://whop.com/apps/app_yGI58V5bhzIDJq',
   },
   {
     number: '03',
@@ -107,6 +109,7 @@ const projects = [
     image: '/emilis.webp',
     type: 'client work',
     testimonial: true,
+    live: 'https://emilisjokubas.com/',
   },
   {
     number: '04',
@@ -129,6 +132,7 @@ const projects = [
     year: '2024',
     image: '/fields.webp',
     type: 'Project',
+    live: 'https://fields.lauva.dev/',
   },
   {
     number: '06',
@@ -141,6 +145,7 @@ const projects = [
     year: '2023',
     image: '/aurelija.webp',
     type: 'client work',
+    live: 'https://www.homebyaurelija.com/',
   },
 ];
 
@@ -407,18 +412,14 @@ const Index = () => {
                 <TooltipContent side="bottom">I don't bite 👋</TooltipContent>
               </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger>
-                  <motion.div
-                    className={'h-11 w-11 flex items-center justify-center'}
-                    whileHover={{ scale: 1.06 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-                  >
-                    <ThemeToggle />
-                  </motion.div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">Switch vibes</TooltipContent>
-              </Tooltip>
+              <motion.div
+                className={'h-11 w-11 flex items-center justify-center'}
+                whileHover={{ scale: 1.06 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                title="Switch vibes"
+              >
+                <ThemeToggle />
+              </motion.div>
 
               <div ref={mobileMenuRef} className="md:hidden relative">
                 <motion.button
@@ -719,19 +720,36 @@ const Index = () => {
                               <p className="mt-1 text-sm text-muted-foreground">{p.outcome}</p>
                             </div>
                           ) : null}
-                          {'testimonial' in p && p.testimonial ? (
-                            <a
-                              href="#testimonials"
-                              className={buttonVariants({
-                                variant: 'default',
-                                size: 'sm',
-                                className:
-                                  'border-border font-mono text-xs uppercase tracking-wide hover:border-foreground order-4',
-                              })}
-                            >
-                              View testimonial →
-                            </a>
-                          ) : null}
+                          <div className="flex flex-wrap items-center gap-2">
+                            {'live' in p && p.live ? (
+                              <a
+                                href={p.live}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={buttonVariants({
+                                  variant: 'default',
+                                  size: 'sm',
+                                  className:
+                                    'border-border font-mono text-xs uppercase tracking-wide hover:border-foreground',
+                                })}
+                              >
+                                View live ↗
+                              </a>
+                            ) : null}
+                            {'testimonial' in p && p.testimonial ? (
+                              <a
+                                href="#testimonials"
+                                className={buttonVariants({
+                                  variant: 'secondary',
+                                  size: 'sm',
+                                  className:
+                                    'border-border font-mono text-xs uppercase tracking-wide hover:border-foreground',
+                                })}
+                              >
+                                View testimonial →
+                              </a>
+                            ) : null}
+                          </div>
                         </div>
                         <div className="flex flex-col justify-between">
                           <div>
@@ -821,8 +839,7 @@ const Index = () => {
               className="mt-8 max-w-4xl border-l-2 border-border pl-6 font-display text-4xl font-bold tracking-tight md:pl-8 md:text-6xl "
             >
               I build products that
-              <br />
-              <span className="text-muted-foreground italic">feel simple to use.</span>
+              <span className="text-muted-foreground italic ml-1">feel simple to use.</span>
             </motion.h2>
 
             <div className="mt-14 space-y-8">
@@ -836,7 +853,7 @@ const Index = () => {
                 and backend.
               </motion.p>
 
-              <motion.div variants={fadeUp} custom={3} className="ml-auto w-full max-w-xl space-y-6 text-right">
+              <motion.div variants={fadeUp} custom={3} className="ml-auto w-full max-w-xl space-y-6 md:text-right">
                 <p className="text-base leading-relaxed text-muted-foreground">
                   I enjoy moving fast, keeping things simple, and making interfaces that feel good to use. In my free
                   time I build side projects, design dashboard UIs for fun, and sometimes make YouTube videos to share
@@ -844,7 +861,7 @@ const Index = () => {
                 </p>
 
                 <div className="ml-auto border-t border-border pt-4">
-                  <div className="flex items-center justify-end">
+                  <div className="flex items-center md:justify-end">
                     {socialLinks.map((s) => {
                       const Icon = s.icon;
                       return (
