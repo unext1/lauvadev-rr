@@ -1,113 +1,47 @@
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Github, Layers, Linkedin, MapPin } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router';
-import { DotPattern } from '~/components/dot-bg';
+import { GithubLogoIcon, LinkedinLogoIcon, YoutubeLogoIcon } from '@phosphor-icons/react';
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CursorGlow } from '~/components/cursor-glow';
 import { ThemeToggle } from '~/components/theme-switcher';
-import { Button } from '~/components/ui/button';
+import { buttonVariants } from '~/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
 import { cn } from '~/utils';
 import type { Route } from './+types';
-const Technology = ({ name }: { name: string }) => {
-  return (
-    <div className="hover:bg-muted/20 dark:hover:bg-muted/10 rounded-lg border border-border/10 p-3 transition-colors">
-      <h3 className="text-sm font-medium">{name}</h3>
-    </div>
-  );
-};
-const useActiveSection = () => {
-  const [activeSection, setActiveSection] = useState('hero');
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const location = useLocation();
-
-  useEffect(() => {
-    const sections = ['hero', 'work', 'about', 'skills', 'journey', 'contact'];
-
-    // Cleanup previous observer
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
-
-    // Create new observer
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-            // Update URL without scroll
-            window.history.replaceState(null, '', `#${entry.target.id}`);
-          }
-        });
-      },
-      {
-        rootMargin: '-50% 0px -50% 0px', // Consider element in view when it's in the middle
-        threshold: 0
-      }
-    );
-
-    // Observe all sections
-    sections.forEach((section) => {
-      const element = document.getElementById(section);
-      if (element) {
-        observerRef.current?.observe(element);
-      }
-    });
-
-    // Initial active section from hash
-    const hash = location.hash.slice(1);
-    if (hash && sections.includes(hash)) {
-      setActiveSection(hash);
-    }
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [location]);
-
-  return activeSection;
-};
-
-const navItems = [
-  { name: 'work', href: '#work' },
-  { name: 'about', href: '#about' },
-  { name: 'journey', href: '#journey' },
-  { name: 'contact', href: '#contact' }
-];
 
 export const meta: Route.MetaFunction = () => {
   const title = 'Laurynas Valiulis | Portfolio';
   const description =
-    'Laurynas Valiulis is a full stack dev crafting sleek, scalable sites with code & taste. Based in Sweden. Available for projects.';
-  const url = `https://lauva.dev`;
+    'Full-stack developer turning complex ideas into clear, high-performing products. Based in Sweden. React, TypeScript & Node.js.';
+  const url = 'https://lauva.dev';
 
   return [
     { title },
     {
       name: 'description',
-      content: description
+      content: description,
     },
     {
       property: 'og:title',
-      content: title
+      content: title,
     },
     {
       property: 'og:description',
-      content: description
+      content: description,
     },
     { property: 'og:url', content: url },
     {
       name: 'twitter:title',
-      content: title
+      content: title,
     },
     {
       name: 'twitter:description',
-      content: description
+      content: description,
     },
     {
       tagName: 'link',
       rel: 'canonical',
-      href: url
+      href: url,
     },
     { name: 'robots', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -115,141 +49,386 @@ export const meta: Route.MetaFunction = () => {
     { name: 'author', content: 'Laurynas Valiulis' },
     { property: 'og:type', content: 'website' },
     { property: 'og:site_name', content: 'Laurynas' },
-    { property: 'og:image', content: 'https://lauva.dev/meta.png' },
+    { property: 'og:image', content: 'https://lauva.dev/meta.webp' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:site', content: '@lauvadev' },
     { name: 'twitter:creator', content: '@lauvadev' },
-    { name: 'twitter:image', content: 'https://lauva.dev/meta.png' },
-    { tagName: 'link', rel: 'icon', href: '/favicon.ico' }
+    { name: 'twitter:image', content: 'https://lauva.dev/meta.webp' },
+    { tagName: 'link', rel: 'icon', href: '/favicon.ico' },
   ];
 };
 
+const SectionLabel = ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => (
+  <motion.span
+    variants={fadeUp}
+    className="block font-mono text-xs uppercase tracking-wider text-muted-foreground"
+    {...props}
+  >
+    {children}
+  </motion.span>
+);
+
+const NAV_ITEMS = ['work', 'about', 'experience', 'stack', 'testimonials', 'contact'] as const;
+const projects = [
+  {
+    number: '01',
+    title: 'Neuralfinity',
+    subtitle:
+      'Built websites and internal tools for Neuralfinity, an AI platform startup. Created modern dashboards and systems that made complex AI operations easy to use. Managed multiple projects as a solo developer and contributed across the full stack from product flows to backend integrations.',
+    problem: '',
+    outcome: '',
+    tech: 'React Router v7, TypeScript, Tailwind CSS, Node.js, Docker, Better-Auth, Stripe, PostHog',
+    year: '2024-2025',
+    image: '/neuralfinity.webp',
+    type: 'contract work',
+    testimonial: true,
+  },
+  {
+    number: '02',
+    title: 'Whop CRM',
+    subtitle:
+      'A fast, clean CRM for Whop creators and agencies that keeps leads, deals, clients, and tasks organized without the clutter. Used by paying users.',
+    problem: 'Most CRMs try to do everything, which slows teams down when they just need the essentials.',
+    outcome:
+      'Shipped a focused CRM with dashboard analytics, a pipeline view, forms(to catch leads) tasks + notes, and a clear activity timeline so teams can stay on top of relationships and close deals faster.',
+    tech: 'React Router v7, Typescript, Whop API, Shadcn, Tailwind CSS, Turso DB, Drizzle ORM',
+    year: '2025',
+    image: '/crm.webp',
+    type: 'personal Project',
+  },
+  {
+    number: '03',
+    title: 'Emilis Jokūbas',
+    subtitle: 'Website for Lithuanian comedian and content creator Emilis Jokūbas.',
+    problem: 'Needed one place for tour dates, key links, and career info that reads well on mobile.',
+    outcome: 'Built a simple, fast site that keeps the focus on shows and content.',
+    tech: 'React Router v7, TypeScript, Tailwind CSS, Cloudflare Workers',
+    year: '2025',
+    image: '/emilis.webp',
+    type: 'client work',
+    testimonial: true,
+  },
+  {
+    number: '04',
+    title: 'Dashboard Design',
+    subtitle: 'A simple dashboard UI concept.',
+    problem: '',
+    outcome: '',
+    tech: 'React Router v7, Tailwind CSS, Shadcn',
+    year: '2025',
+    image: '/design.webp',
+    type: 'design',
+  },
+  {
+    number: '05',
+    title: 'Field Service App (SaaS)',
+    subtitle: 'SaaS app for planning, assigning, and tracking field service work.',
+    problem: 'Teams needed a simpler way to manage tasks, people, and progress in the field.',
+    outcome: 'Built task creation and assignment flows with a kanban board using optimistic UI.',
+    tech: 'Remix.run, TypeScript, Node.js, TursoDB',
+    year: '2024',
+    image: '/fields.webp',
+    type: 'Project',
+  },
+  {
+    number: '06',
+    title: 'Home By Aurelija',
+    subtitle:
+      'A portfolio website for an interior designer showcasing their work, services, and design philosophy, with a clean layout.',
+    problem: 'Needed a clear place to present projects, services, and approach without distracting UI.',
+    outcome: 'Delivered a modern site that highlights the work and makes it easy to understand the services.',
+    tech: 'Remix.run, TypeScript, Tailwind CSS, Contentful CMS, Resend',
+    year: '2023',
+    image: '/aurelija.webp',
+    type: 'client work',
+  },
+];
+
+const experience = [
+  {
+    period: 'Jun 2024 — Jun 2025',
+    company: 'Neuralfinity',
+    role: 'Full-Stack Developer',
+    description:
+      'Built internal tools and dashboards for an AI platform. Implemented full-stack features with server-side routing, authentication, analytics, and third-party integrations. Owned features end to end.',
+  },
+  {
+    period: '2020 — Present',
+    company: 'Freelance',
+    role: 'Full-Stack Developer',
+    description:
+      'Delivered custom web systems for clients with a focus on performance, clean interfaces, and codebases that are easy to maintain long after handoff.',
+  },
+  {
+    period: 'Jan — May 2024',
+    company: 'Erlin Business Company',
+    role: 'Full-Stack Intern',
+    description:
+      'Led development of a SaaS application from initial concept to production. Owned frontend, backend, UI/UX, API design, and database architecture under tight deadlines.',
+  },
+  {
+    period: 'Apr — May 2023',
+    company: 'Brainforest',
+    role: 'Full-Stack Intern',
+    description:
+      'Contributed to an AI-based image alt-text generation tool. Built frontend and backend features, integrated AI services, and worked in an agile team iterating quickly.',
+  },
+];
+
+const education = [
+  {
+    period: '2022 — 2024',
+    school: 'Borås Yrkeshögskola',
+    focus: 'Frontend Development (React)',
+    note: 'Focused on modern frontend development using React and TypeScript. Built multiple web apps with emphasis on component architecture, accessibility, and maintainable code. Gained experience collaborating in team-based projects and working from real-world requirements.',
+  },
+  {
+    period: '2019 — 2022',
+    school: 'LBS Helsingborg',
+    focus: 'Game Development',
+    note: 'Built a strong foundation in programming, problem solving, and system thinking. Developed several small games using Unity, focusing on game logic and interactive systems. Independently explored modern web technologies, which led to a transition into web and full-stack development.',
+  },
+];
+
+const stack = {
+  frontend: ['React', 'Next.js', 'React Router v7', 'TypeScript', 'TailwindCSS', 'Framer Motion'],
+  backend: ['Node.js', 'Drizzle ORM', 'Better-Auth', 'Stripe', 'PostHog'],
+  infrastructure: ['PostgreSQL', 'SQLite', 'Cloudflare Workers', 'Docker'],
+  tools: ['Figma', 'Git', 'Bash'],
+};
+
+const socialLinks = [
+  { short: 'Gh', label: 'GitHub', href: 'https://github.com/unext1', icon: GithubLogoIcon },
+  { short: 'Li', label: 'LinkedIn', href: 'https://www.linkedin.com/in/laurynas-valiulis/', icon: LinkedinLogoIcon },
+  { short: 'Yt', label: 'YouTube', href: 'https://www.youtube.com/@Lauvadev', icon: YoutubeLogoIcon },
+];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] as const },
+  }),
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
 const Index = () => {
-  const { scrollY } = useScroll();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
 
-  const opacityTransform = useTransform(scrollY, [0, 300], [1, 0]);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const [dims, setDims] = useState({ w: 1920, h: 1080 });
 
-  const activeSection = useActiveSection();
+  const mx = useMotionValue(dims.w / 2);
+  const my = useMotionValue(dims.h / 2);
+  const smx = useSpring(mx, { stiffness: 50, damping: 20 });
+  const smy = useSpring(my, { stiffness: 50, damping: 20 });
+  const rotY = useTransform(smx, [0, dims.w], [-2, 2]);
+  const rotX = useTransform(smy, [0, dims.h], [15, -15]);
 
-  // Add smooth scroll handler
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (href.startsWith('#')) {
-      e.preventDefault();
-      const element = document.getElementById(href.slice(1));
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
+  const { scrollYProgress: footerProgress } = useScroll({
+    target: footerRef,
+    offset: ['start end', 'end end'],
+  });
+  const footerScale = useTransform(footerProgress, [0, 0.6, 1], [0.88, 1, 1]);
+  const footerY = useTransform(footerProgress, [0, 0.6, 1], [60, 0, 0]);
+  const footerOpacity = useTransform(footerProgress, [0, 0.3, 1], [0.3, 1, 1]);
+  const footerRotX = useTransform(footerProgress, [0, 1, 1], [4, 0, 0]);
+
+  const [expandedProject, setExpandedProject] = useState<string | null>('01');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setDims({ w: window.innerWidth, h: window.innerHeight });
+      mx.set(window.innerWidth / 2);
+      my.set(window.innerHeight / 2);
     }
-  };
+  }, [mx, my]);
+
+  useEffect(() => {
+    const sectionIds: string[] = ['hero', ...NAV_ITEMS];
+
+    const onScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+
+      const offset = window.innerHeight * 0.3;
+      let current = sectionIds[0];
+
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (el && el.offsetTop - offset <= window.scrollY) {
+          current = id;
+        }
+      }
+
+      setActiveSection(current);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (mobileMenuRef.current?.contains(target)) return;
+      setIsMobileMenuOpen(false);
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('touchstart', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('touchstart', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isMobileMenuOpen]);
+
+  const onMove = useCallback(
+    (e: React.PointerEvent) => {
+      mx.set(e.clientX);
+      my.set(e.clientY);
+    },
+    [mx, my],
+  );
+  const onLeave = useCallback(() => {
+    mx.set(dims.w / 2);
+    my.set(dims.h / 2);
+  }, [mx, my, dims]);
 
   return (
-    <div className="relative bg-background min-h-screen selection:bg-[#2563EB]/10 selection:text-[#2563EB]">
-      {/* Header */}
+    <div className="relative bg-background min-h-screen flex flex-col">
+      <CursorGlow />
+
       <motion.header
-        className="fixed top-4 left-0 right-0 z-50 transition-all duration-500"
+        className="fixed left-0 right-0 z-50  pt-8 pb-4"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-linear-to-b from-background backdrop-blur-sm"
+          initial={false}
+          animate={{ opacity: isScrolled ? 1 : 0 }}
+          transition={{ duration: 0.28, ease: 'easeOut' }}
+          aria-label="glow effect on header when scrolled"
+        />
+        <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6 ">
           <div className="grid grid-cols-3 items-center gap-2 md:gap-4">
             {/* Left section - Logo */}
             <div className="flex justify-start">
               <motion.div
-                className={`h-10 py-2 px-4 rounded-full backdrop-blur-md bg-background/70 border border-muted flex items-center`}
+                className={'h-10 py-2 px-4 flex items-center'}
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               >
-                <Link to="/" className="group" onClick={(e) => handleNavClick(e, '#hero')}>
+                <a href="#hero" className="group">
                   <motion.span
-                    className="text-lg font-medium text-foreground tracking-tight group-hover:text-[#2563EB] transition-colors"
+                    className={cn(
+                      'text-lg font-medium tracking-tight transition-colors',
+                      activeSection === 'hero' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+                    )}
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                   >
-                    laurynas<span className="text-[#2563EB]">.</span>
+                    Laurynas
                   </motion.span>
-                </Link>
+                </a>
               </motion.div>
             </div>
 
             {/* Middle section - Navigation */}
             <div className="flex justify-center">
-              <motion.div
-                className={`h-10 hidden md:flex items-center gap-8 py-2 px-8 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                {/* Logo/Icon in the middle */}
-                <motion.button
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className="w-5 h-5 cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div
-                    className={cn(
-                      'w-5 h-5 rounded-md transition-colors duration-300 border-2 border-muted',
-                      activeSection === 'hero' ? 'bg-blue-500/70' : 'bg-transparent'
-                    )}
-                  />
-                </motion.button>
-
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className={cn(
-                      'text-sm transition-colors relative group',
-                      activeSection === item.name.toLowerCase()
-                        ? 'text-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
+              <div className={'h-10 hidden md:flex items-center gap-8 py-2 px-8'}>
+                {NAV_ITEMS.map((section) => (
+                  <motion.div
+                    key={section}
+                    whileHover={{ scale: 1.03 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                   >
-                    {item.name}
-                    <span
+                    <a
+                      href={`#${section}`}
                       className={cn(
-                        'absolute -bottom-1 left-0 h-px bg-[#2563EB] transition-all duration-300',
-                        activeSection === item.name.toLowerCase() ? 'w-full' : 'w-0 group-hover:w-full'
+                        'text-sm capitalize tracking-wide transition-colors relative group',
+                        activeSection === section ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
                       )}
-                    />
-                  </Link>
+                    >
+                      {section}
+                      <span
+                        className={cn(
+                          'absolute -bottom-1 left-0 h-px bg-muted-foreground transition-all duration-300',
+                          activeSection === section ? 'w-full' : 'w-0 group-hover:w-full',
+                        )}
+                      />
+                    </a>
+                  </motion.div>
                 ))}
-              </motion.div>
+              </div>
             </div>
 
             {/* Right section - Email & Theme Toggle */}
             <div className="flex justify-end items-center gap-2 md:gap-4">
-              <motion.div
-                className={`h-10 hidden lg:flex items-center gap-3 py-2 px-5 rounded-full backdrop-blur-md bg-background/70 border border-muted`}
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                <a
-                  href="mailto:info@lauva.dev"
-                  className="text-sm text-foreground hover:text-blue-500 transition-colors"
-                >
-                  info@lauva.dev
-                </a>
-              </motion.div>
+              <Tooltip>
+                <TooltipTrigger>
+                  <motion.div
+                    className={'h-10 hidden lg:flex items-center gap-3 py-2 px-5'}
+                    whileHover={{ scale: 1.03 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  >
+                    <a
+                      href="mailto:info@lauva.dev"
+                      className="inline-flex min-h-11 items-center text-sm text-foreground hover:text-foreground transition-colors"
+                    >
+                      info@lauva.dev
+                    </a>
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">I don't bite 👋</TooltipContent>
+              </Tooltip>
 
-              <motion.div
-                className={`h-9 w-9 flex items-center justify-center rounded-full backdrop-blur-md bg-background/70 border border-muted`}
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              >
-                <ThemeToggle />
-              </motion.div>
+              <Tooltip>
+                <TooltipTrigger>
+                  <motion.div
+                    className={'h-11 w-11 flex items-center justify-center'}
+                    whileHover={{ scale: 1.06 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  >
+                    <ThemeToggle />
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Switch vibes</TooltipContent>
+              </Tooltip>
 
-              <div className="md:hidden relative">
+              <div ref={mobileMenuRef} className="md:hidden relative">
                 <motion.button
-                  className={`h-9 w-9 flex items-center justify-center rounded-full backdrop-blur-md bg-background/70 border border-muted`}
+                  className={'h-9 w-9 flex items-center justify-center'}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                  aria-expanded={isMobileMenuOpen}
+                  aria-controls="mobile-navigation"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
                   <motion.svg
@@ -276,36 +455,33 @@ const Index = () => {
                       animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
                       exit={{ opacity: 0, scale: 0.9, y: 10, x: 0 }}
                       transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className="md:hidden absolute right-0 mt-2 origin-top bg-background/95 backdrop-blur-sm rounded-2xl border border-muted shadow-lg min-w-[200px] z-50 overflow-hidden"
+                      id="mobile-navigation"
+                      className="md:hidden absolute right-0 mt-2 origin-top bg-card/80 backdrop-blur-sm  border border-muted shadow-lg min-w-50 z-50 overflow-hidden"
                       style={{ transformOrigin: 'top right' }}
                     >
-                      <nav className="flex flex-col py-4 px-6 gap-4">
-                        {navItems.map((item, index) => (
+                      <nav className="flex flex-col p-4 gap-4">
+                        {NAV_ITEMS.map((section, index) => (
                           <motion.div
-                            key={item.name}
+                            key={section}
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.2, delay: 0.05 * (index + 1) }}
                           >
-                            <Link
-                              to={item.href}
-                              onClick={(e) => {
-                                handleNavClick(e, item.href);
+                            <a
+                              href={`#${section}`}
+                              onClick={() => {
                                 setIsMobileMenuOpen(false);
                               }}
                               className={cn(
-                                'text-sm transition-colors block py-1.5 relative w-fit',
-                                activeSection === item.name.toLowerCase()
-                                  ? 'text-blue-500'
-                                  : 'text-foreground hover:text-blue-500'
+                                'text-sm capitalize tracking-wide transition-colors block py-1 relative w-fit',
+                                activeSection === section
+                                  ? 'text-foreground'
+                                  : 'text-muted-foreground hover:text-foreground',
                               )}
                             >
-                              {item.name}
-                              {activeSection === item.name.toLowerCase() && (
-                                <div className="h-px w-full bg-blue-500 mt-1" />
-                              )}
-                            </Link>
+                              {section}
+                            </a>
                           </motion.div>
                         ))}
                         <motion.div
@@ -317,7 +493,7 @@ const Index = () => {
                         >
                           <a
                             href="mailto:info@lauva.dev"
-                            className="text-sm text-muted-foreground hover:text-blue-500 transition-colors block py-1.5"
+                            className="text-sm text-muted-foreground hover:text-foreground transition-colors block py-1.5"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             info@lauva.dev
@@ -334,1124 +510,649 @@ const Index = () => {
       </motion.header>
 
       {/* Hero */}
-      <section id="hero" className="relative h-screen flex items-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="absolute inset-0"
+      <div
+        id="hero"
+        className="relative m-4 flex min-h-[calc(100svh-2rem)] flex-col overflow-hidden border bg-linear-to-b from-card to-background"
+      >
+        <div
+          ref={heroRef}
+          onPointerMove={onMove}
+          onPointerLeave={onLeave}
+          className="relative flex pt-10 min-h-full flex-1 flex-col overflow-hidden"
         >
-          <DotPattern
-            width={24}
-            height={24}
-            className={cn(
-              'absolute inset-0 opacity-50 [mask-image:radial-gradient(600px_circle_at_center,white,transparent)]'
-            )}
-          />
-        </motion.div>
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_45%,rgba(255,255,255,0.04),transparent_70%)]" />
+          </div>
+          <motion.div
+            className="absolute -bottom-10 -rotate-10 left-0 right-0 z-0 pointer-events-none mix-blend-screen"
+            style={{ perspective: '1200px' }}
+            initial={{ opacity: 0, y: 80, scale: 0.97 }}
+            animate={{ opacity: 0.14, y: 0, scale: 1.01 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+          >
+            <motion.img
+              src="/fingers.png"
+              className="w-full h-200 scale-120 object-cover"
+              alt=""
+              draggable={false}
+              style={{
+                transformStyle: 'preserve-3d',
+                rotateX: rotX,
+                rotateY: rotY,
+              }}
+              animate={{ y: [0, -6, 0], scale: [1, 1.02, 1] }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: 'easeInOut',
+              }}
+            />
+          </motion.div>
 
-        <div className="max-w-screen-xl w-full mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
-          <div className="max-w-2xl mx-auto text-center">
-            {/* <motion.span
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7 }}
-              className="inline-flex items-center mb-6 text-sm text-blue-500/70 tracking-wide border border-blue-500/10 rounded-full py-1 px-3"
-            >
-              <span className="w-1 h-1 rounded-full bg-blue-500/80 mr-2"></span>
-              <motion.span
-                animate={{ opacity: [1, 0.8, 1] }}
-                transition={{ duration: 3, repeat: Infinity, repeatType: 'reverse' }}
-              >
-                available for projects
-              </motion.span>
-            </motion.span> */}
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-base w-fit mx-auto rounded-full bg-background mb-4 text-muted-foreground p-1 px-4 border"
-            >
-              <span className="inline-flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5 text-[#2563EB]" />
-                <span>Based in Sweden</span>
-              </span>
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-5xl md:text-6xl xl:text-7xl font-normal tracking-tight text-foreground mb-6"
-            >
-              Hi, i'm{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">Laurynas</span>
-              </span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="mt-6 text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed text-center mx-auto"
-            >
-              Full stack dev crafting sleek, scalable sites with code & taste.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="mt-10 flex flex-wrap gap-6 items-center justify-center"
-            >
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="relative overflow-hidden">
-                <a
-                  href="mailto:info@lauva.dev"
-                  className="relative z-10 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#2563EB]/80 to-[#1E40AF]/80 text-white font-medium flex items-center gap-2 shadow-lg shadow-[#2563EB]/20 hover:shadow-[#2563EB]/30 transition-shadow duration-300"
+          <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-10 md:px-12">
+            <div className="max-w-5xl w-full">
+              <motion.div initial="hidden" animate="show" variants={stagger}>
+                <motion.p
+                  variants={fadeUp}
+                  custom={0}
+                  className="mb-6 font-mono text-xs uppercase tracking-wider text-muted-foreground"
                 >
-                  Contact me
-                </a>
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
+                  Laurynas Valiulis
+                </motion.p>
+                <motion.h1
+                  variants={fadeUp}
+                  custom={1}
+                  className="font-display text-2xl md:text-5xl lg:text-7xl xl:text-[90px] font-bold leading-[0.95] tracking-tight"
+                >
+                  I turn complex ideas into
+                  <br />
+                  clear, <span className="italic font-bold text-muted-foreground"> high performing products.</span>
+                </motion.h1>
 
-        <motion.div
-          style={{ opacity: opacityTransform }}
-          className="absolute left-1/2 bottom-12 transform z-20 -translate-x-1/2 flex flex-col items-center"
-        >
-          <Link to="#work" className="flex items-center flex-col text-center justify-center">
-            <motion.div className="w-5 h-9 border border-muted-foreground/20 rounded-full flex justify-center">
-              <motion.div
-                animate={{ y: [-2, 2, 0] }}
-                transition={{
-                  duration: 2.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut'
-                }}
-                className="w-1 h-1.5 bg-[#2563EB]/50 rounded-full mt-2"
-              />
-            </motion.div>
-            <span className="mt-2 text-[10px] uppercase tracking-widest text-muted-foreground/40">scroll</span>
-          </Link>
-        </motion.div>
-      </section>
-
-      {/* Work Section */}
-      <section id="work" className="py-32 relative">
-        <div className="absolute -top-40 left-[20%] w-[40vw] h-[40vh] bg-[#2563EB]/2 rounded-full blur-[120px] opacity-20"></div>
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
-          <motion.header
-            className="mb-16 md:mb-20 flex items-end justify-between"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            viewport={{ once: true, margin: '-100px' }}
-          >
-            <h2 className="text-4xl md:text-5xl font-normal tracking-tight text-foreground">work</h2>
-            <span className="text-sm text-muted-foreground hidden md:block">selected projects</span>
-          </motion.header>
-
-          {/* Neuralfinity */}
-          <motion.div
-            className="mb-32"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-            viewport={{ once: true, margin: '-100px' }}
-          >
-            <a
-              href="https://neuralfinity.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                  <div className="lg:col-span-5 z-10">
-                    <motion.div
-                      className="w-10 h-10 bg-[#2563EB]/5 rounded-xl flex items-center justify-center mb-8 shadow-sm"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      whileInView={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
-                      viewport={{ once: true }}
-                    >
-                      <Layers className="h-5 w-5 text-[#2563EB]/70" />
-                    </motion.div>
-
-                    <motion.h3
-                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      Neuralfinity
-                    </motion.h3>
-
-                    <motion.div
-                      className="flex items-center text-sm text-muted-foreground mb-8"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      viewport={{ once: true }}
-                    >
-                      <span className="uppercase tracking-wider">Contract Work</span>
-                      <span className="mx-2">•</span>
-                      <span>2024-2025</span>
-                    </motion.div>
-
-                    <motion.p
-                      className="text-lg text-muted-foreground mb-10"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      viewport={{ once: true }}
-                    >
-                      Built websites and internal tools for an AI platform startup Neuralfinity. Created modern
-                      dashboards and systems that make complex AI operations easy to use. Full stack development.
-                    </motion.p>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      viewport={{ once: true }}
-                    >
-                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
-                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
-                          View project
-                        </span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
-                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
-                      </Button>
-                    </motion.div>
-                  </div>
-
-                  <div className="lg:col-span-7 z-10">
-                    <motion.div
-                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.9, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      whileHover={{
-                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
-                      }}
-                    >
-                      <img
-                        src="/neuralfinity.jpg"
-                        alt="Neuralfinity Platform"
-                        className="w-full h-full object-cover rounded-lg z-10"
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </motion.div>
-
-          {/* Whop CRM */}
-          <motion.div
-            className="mb-32"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-            viewport={{ once: true, margin: '-100px' }}
-          >
-            <a
-              href="https://whop.com/apps/app_yGI58V5bhzIDJq"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                  <div className="lg:col-span-5 z-10">
-                    <motion.h3
-                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      Whop CRM
-                    </motion.h3>
-
-                    <motion.div
-                      className="flex items-center text-sm text-muted-foreground mb-8"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      viewport={{ once: true }}
-                    >
-                      <span className="uppercase tracking-wider">Personal Project</span>
-                      <span className="mx-2">•</span>
-                      <span>2025</span>
-                    </motion.div>
-
-                    <motion.p
-                      className="text-lg text-muted-foreground mb-4"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      viewport={{ once: true }}
-                    >
-                      A fast CRM for Whop creators and agencies. Built to track leads, deals, and tasks without the
-                      overhead of traditional CRMs. Includes a clear pipeline view (kanban board), activity timelines,
-                      and AI powered summaries to reduce manual tracking and context switching.
-                    </motion.p>
-
-                    <motion.div
-                      className="flex flex-wrap gap-2 mb-10 text-base text-muted-foreground"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      viewport={{ once: true }}
-                    >
-                      <span className="font-medium">Built with:</span>
-                      <span>React Router v7</span>
-                      <span>•</span>
-                      <span>Whop API</span>
-                      <span>•</span>
-                      <span>Shadcn</span>
-                      <span>•</span>
-                      <span>Tailwind CSS</span>
-                      <span>•</span>
-                      <span>Turso DB</span>
-                      <span>•</span>
-                      <span>DrizzleORM</span>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      viewport={{ once: true }}
-                    >
-                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
-                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
-                          View project
-                        </span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
-                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
-                      </Button>
-                    </motion.div>
-                  </div>
-
-                  <div className="lg:col-span-7 z-10">
-                    <motion.div
-                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.9, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      whileHover={{
-                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
-                      }}
-                    >
-                      <video
-                        src="/short-demo.mov"
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-full object-cover rounded-lg z-10"
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </motion.div>
-
-          {/* Emilis Jokūbas */}
-          <motion.div
-            className="mb-32"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-            viewport={{ once: true, margin: '-100px' }}
-          >
-            <a
-              href="https://emilisjokubas.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                  <div className="lg:col-span-5 z-10">
-                    <motion.h3
-                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      Emilis Jokūbas
-                    </motion.h3>
-
-                    <motion.div
-                      className="flex items-center text-sm text-muted-foreground mb-8"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      viewport={{ once: true }}
-                    >
-                      <span className="uppercase tracking-wider">Client</span>
-                      <span className="mx-2">•</span>
-                      <span>2025</span>
-                    </motion.div>
-
-                    <motion.p
-                      className="text-lg text-muted-foreground mb-10"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      viewport={{ once: true }}
-                    >
-                      Emilis Jokūbas is a Lithuanian comedian and content creator. The website was designed to promote
-                      his upcoming tour dates and provide information about his comedy career and his activities.
-                    </motion.p>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      viewport={{ once: true }}
-                    >
-                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
-                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
-                          View project
-                        </span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
-                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
-                      </Button>
-                    </motion.div>
-                  </div>
-
-                  <div className="lg:col-span-7 z-10">
-                    <motion.div
-                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.9, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      whileHover={{
-                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
-                      }}
-                    >
-                      {/* Content */}
-                      <img
-                        src="/emilis.png"
-                        alt="Emilis Jokūbas"
-                        className="w-full h-full object-cover rounded-lg z-10 "
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </motion.div>
-
-          {/* Field Service App */}
-          <motion.div
-            className="mb-32"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-            viewport={{ once: true, margin: '-100px' }}
-          >
-            <a
-              href="https://fields.lauva.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                  <div className="lg:col-span-5 z-10">
-                    <motion.div
-                      className="w-10 h-10 bg-[#2563EB]/5 rounded-xl flex items-center justify-center mb-8 shadow-sm"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      whileInView={{ scale: 1, opacity: 1 }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
-                      viewport={{ once: true }}
-                    >
-                      <Layers className="h-5 w-5 text-[#2563EB]/70" />
-                    </motion.div>
-
-                    <motion.h3
-                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      Field Service App (SaaS)
-                    </motion.h3>
-
-                    <motion.div
-                      className="flex items-center text-sm text-muted-foreground mb-8"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      viewport={{ once: true }}
-                    >
-                      <span className="uppercase tracking-wider">Personal</span>
-                      <span className="mx-2">•</span>
-                      <span>2024</span>
-                    </motion.div>
-
-                    <motion.p
-                      className="text-lg text-muted-foreground mb-10"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      viewport={{ once: true }}
-                    >
-                      Field Service App is a SaaS application that allows users to manage their field service
-                      operations. Create, manage, and track tasks, assign them to people, and track their progress.
-                    </motion.p>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      viewport={{ once: true }}
-                    >
-                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
-                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
-                          View project
-                        </span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
-                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
-                      </Button>
-                    </motion.div>
-                  </div>
-
-                  <div className="lg:col-span-7 z-10">
-                    <motion.div
-                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.9, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      whileHover={{
-                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
-                      }}
-                    >
-                      <img
-                        src="/fields.png"
-                        alt="Field Service App"
-                        className="w-full h-full object-cover rounded-lg z-10 "
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </motion.div>
-
-          {/* Home By Aurelija */}
-          <motion.div
-            className="mb-32"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-            viewport={{ once: true, margin: '-100px' }}
-          >
-            <a
-              href="https://www.homebyaurelija.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                  <div className="lg:col-span-5 z-10">
-                    <motion.h3
-                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      Home By Aurelija
-                    </motion.h3>
-
-                    <motion.div
-                      className="flex items-center text-sm text-muted-foreground mb-8"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      viewport={{ once: true }}
-                    >
-                      <span className="uppercase tracking-wider">Client</span>
-                      <span className="mx-2">•</span>
-                      <span>2023</span>
-                    </motion.div>
-
-                    <motion.p
-                      className="text-lg text-muted-foreground mb-10"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      viewport={{ once: true }}
-                    >
-                      A portfolio website for an interior designer showcasing their work, services, and design
-                      philosophy. Features a clean, modern design that highlights the designer's projects and expertise.
-                    </motion.p>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      viewport={{ once: true }}
-                    >
-                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
-                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
-                          View project
-                        </span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
-                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
-                      </Button>
-                    </motion.div>
-                  </div>
-
-                  <div className="lg:col-span-7 z-10">
-                    <motion.div
-                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.9, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      whileHover={{
-                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
-                      }}
-                    >
-                      <img
-                        src="/aurelija.jpg"
-                        alt="Home By Aurelija"
-                        className="w-full h-full object-cover rounded-lg z-10"
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </motion.div>
-
-          {/* Mėnulio Ritmu */}
-          <motion.div
-            className="mb-32"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-            viewport={{ once: true, margin: '-100px' }}
-          >
-            <a
-              href="https://menulioritmu.lt"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <div className="bg-muted/10 rounded-2xl p-8 md:p-10 relative overflow-hidden group border border-border/5">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                  <div className="lg:col-span-5 z-10">
-                    <motion.h3
-                      className="text-3xl md:text-4xl font-normal text-foreground mb-3"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      Mėnulio Ritmu
-                    </motion.h3>
-
-                    <motion.div
-                      className="flex items-center text-sm text-muted-foreground mb-8"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      viewport={{ once: true }}
-                    >
-                      <span className="uppercase tracking-wider">Client</span>
-                      <span className="mx-2">•</span>
-                      <span>2022</span>
-                    </motion.div>
-
-                    <motion.p
-                      className="text-lg text-muted-foreground mb-10"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      viewport={{ once: true }}
-                    >
-                      A specialized website focused on moon phases and their daily influences. Users can explore
-                      detailed descriptions and insights for each lunar phase, helping them align their activities with
-                      natural rhythms.
-                    </motion.p>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      viewport={{ once: true }}
-                    >
-                      <Button variant="outline" className="group relative overflow-hidden cursor-pointer">
-                        <span className="relative z-10 group-hover:text-white duration-300 transition-colors">
-                          View project
-                        </span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 duration-300 relative z-10 group-hover:text-white" />
-                        <span className="absolute inset-0 bg-[#2563EB] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></span>
-                      </Button>
-                    </motion.div>
-                  </div>
-
-                  <div className="lg:col-span-7 z-10">
-                    <motion.div
-                      className="relative aspect-[16/10] rounded-lg overflow-hidden transition-transform group-hover:scale-[1.01] duration-700"
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.9, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      whileHover={{
-                        boxShadow: '0 20px 40px -20px rgba(0, 0, 0, 0.1)'
-                      }}
-                    >
-                      <img
-                        src="/menulio.jpg"
-                        alt="Menulio Ritmu"
-                        className="w-full h-full object-cover rounded-lg z-10"
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </motion.div>
-        </div>
-        <motion.div
-          className="text-center -mt-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <a
-            href="https://github.com/unext1"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#2563EB] transition-colors group"
-          >
-            <span>View all projects</span>
-            <Github className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </a>
-        </motion.div>
-      </section>
-
-      {/* About Me Section with Technologies */}
-      <section id="about" className="pt-32 pb-48 relative bg-gradient-to-b from-background to-muted/20">
-        <div className="absolute -top-20 right-[10%] w-[30vw] h-[30vh] bg-[#2563EB]/2 rounded-full blur-[100px] opacity-20"></div>
-
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-start">
-            <div className="md:col-span-6 lg:col-span-7">
-              <motion.header
-                className="mb-8 md:mb-10"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true }}
-              >
-                <h2 className="text-4xl md:text-5xl font-normal tracking-tight text-foreground">about me</h2>
-              </motion.header>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-              >
-                <div className="flex flex-col gap-6">
-                  <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">
-                    I'm a 22 y/o developer with a strong expertise on frontend, backend, design, and devops. I crafting
-                    apps that scale, look good, run fast, and feel right.
+                <motion.div variants={fadeUp} custom={2} className="mt-10 flex flex-col gap-1.5 lg:items-end">
+                  <p className="text-xs text-foreground sm:text-base md:text-lg">
+                    Full-stack developer. Based in Sweden.
                   </p>
-                  <p className="text-lg md:text-xl leading-relaxed text-muted-foreground">
-                    I take pride in shipping reliable products with care — thinking through the user experience, code
-                    quality, and how it all comes together in production.
-                  </p>
-
-                  <div className="mt-8 flex flex-wrap gap-8">
-                    {/* Social links */}
-                    <motion.a
-                      href="https://github.com/unext1"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center gap-2"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      viewport={{ once: true }}
-                      whileHover={{ y: -2 }}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-background/70 flex items-center justify-center group-hover:bg-[#2563EB]/10 transition-colors">
-                        <Github className="h-4 w-4 text-muted-foreground group-hover:text-[#2563EB] transition-colors" />
-                      </div>
-                      <span className="text-muted-foreground group-hover:text-[#2563EB] transition-colors">GitHub</span>
-                    </motion.a>
-
-                    <motion.a
-                      href="https://www.linkedin.com/in/laurynas-valiulis/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center gap-2"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
-                      viewport={{ once: true }}
-                      whileHover={{ y: -2 }}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-background/70 flex items-center justify-center group-hover:bg-[#2563EB]/10 transition-colors">
-                        <Linkedin className="h-4 w-4 text-muted-foreground group-hover:text-[#2563EB] transition-colors" />
-                      </div>
-                      <span className="text-muted-foreground group-hover:text-[#2563EB] transition-colors">
-                        LinkedIn
-                      </span>
-                    </motion.a>
-
-                    <motion.a
-                      href="https://www.youtube.com/@Lauvadev"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center gap-2"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
-                      viewport={{ once: true }}
-                      whileHover={{ y: -2 }}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-background/70 flex items-center justify-center group-hover:bg-red-500/10 transition-colors">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-4 w-4 text-muted-foreground group-hover:text-red-500 transition-colors"
+                  <p className="text-xs text-muted-foreground sm:text-base md:text-lg">React, TypeScript & Node.js.</p>
+                </motion.div>
+                <div className="flex lg:items-end w-full flex-col">
+                  <motion.div variants={fadeUp} custom={3} className="mt-10 flex items-center gap-6">
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <a
+                          href="mailto:info@lauva.dev"
+                          className="order-2 inline-flex min-h-11 items-center px-2 font-mono text-xs tracking-wide text-muted-foreground transition-colors hover:text-foreground lg:order-1"
                         >
-                          <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-                          <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-                        </svg>
-                      </div>
-                      <span className="text-muted-foreground group-hover:text-red-500 transition-colors">YouTube</span>
-                    </motion.a>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Technologies Grid */}
-            <div className="md:col-span-6 lg:col-span-5">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-                className="md:pt-[4.5rem]"
-              >
-                <div className="bg-gradient-to-b from-muted/10 to-transparent border rounded-2xl p-4 border-border/10">
-                  <h3 className="text-xl font-medium mb-4 px-2">technologies</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <Technology name="React Router" />
-                    <Technology name="React" />
-                    <Technology name="TypeScript" />
-                    <Technology name="Node.js" />
-                    <Technology name="Tailwind" />
-                    <Technology name="Framer Motion" />
-                    <Technology name="Shadcn UI" />
-                    <Technology name="DrizzleORM" />
-                    <Technology name="Docker" />
-                    <Technology name="Better-Auth" />
-                    <Technology name="Next.js" />
-                    <Technology name="HTML" />
-                  </div>
+                          info@lauva.dev
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>Say hi, I'm friendly</TooltipContent>
+                    </Tooltip>
+                    <a
+                      href="#work"
+                      className={buttonVariants({
+                        variant: 'default',
+                        size: 'lg',
+                        className:
+                          'order-1 md:h-11 border-border px-6 font-mono text-xs uppercase tracking-wide hover:border-foreground lg:order-2',
+                      })}
+                    >
+                      View work ↓
+                    </a>
+                  </motion.div>
                 </div>
               </motion.div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Journey Section */}
-      <section id="journey" className="py-24 relative bg-gradient-to-t from-background to-muted/20">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
-          <header className="mb-16 md:mb-24">
-            <h2 className="text-4xl md:text-5xl font-normal tracking-tight text-foreground">journey</h2>
-          </header>
-
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-border md:transform md:-translate-x-px"></div>
-
-            {/* Timeline entries */}
-            <div className="space-y-16 md:space-y-24 relative">
-              {/* Entry 1 - Current Position */}
-              <motion.div
-                className="relative grid grid-cols-1 md:grid-cols-2 gap-8"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-              >
-                <div className="md:text-right md:pr-16 pl-12 md:pl-0 relative">
-                  <div className="absolute left-4 md:left-auto md:right-0 top-0 w-3 h-3 rounded-full bg-[#2563EB] translate-x-[-6.5px] md:translate-x-[6.5px]"></div>
-                  <span className="text-sm text-[#2563EB] font-medium tracking-wider uppercase mb-2 block">
-                    2024 - 2025
-                  </span>
-                  <h3 className="text-2xl font-medium mb-3">Full-Stack Developer at Neuralfinity</h3>
-                  <p className="text-muted-foreground">
-                    Currently working as a full-stack developer, building innovative AI powered solutions with modern
-                    web technologies.
-                  </p>
-                </div>
-                <div className="md:pl-12"></div>
-              </motion.div>
-
-              {/* Entry 2 - Freelance Work */}
-              <motion.div
-                className="relative grid grid-cols-1 md:grid-cols-2 gap-8"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-              >
-                <div className="md:pr-12"></div>
-                <div className="pl-12 md:pl-16 relative">
-                  <div className="absolute left-4 md:left-0 top-0 w-3 h-3 rounded-full bg-[#2563EB] translate-x-[-6.5px]"></div>
-                  <span className="text-sm text-[#2563EB] font-medium tracking-wider uppercase mb-2 block">
-                    2020 - Present
-                  </span>
-                  <h3 className="text-2xl font-medium mb-3">Freelance</h3>
-                  <p className="text-muted-foreground">
-                    Building and delivering custom web solutions for diverse clients. Strong focus on performance, user
-                    interface, and creating delightful user experiences.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Entry 3 - Internship at Erlin */}
-              <motion.div
-                className="relative grid grid-cols-1 md:grid-cols-2 gap-8"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-              >
-                <div className="md:text-right md:pr-16 pl-12 md:pl-0 relative">
-                  <div className="absolute left-4 md:left-auto md:right-0 top-0 w-3 h-3 rounded-full bg-[#2563EB] translate-x-[-6.5px] md:translate-x-[6.5px]"></div>
-                  <span className="text-sm text-[#2563EB] font-medium tracking-wider uppercase mb-2 block">
-                    Jan 2024 - May 2024
-                  </span>
-                  <h3 className="text-2xl font-medium mb-3">Intern at Erlin Business Company</h3>
-                  <p className="text-muted-foreground">
-                    Led the development of a Field Service SaaS application, showcasing full-stack development
-                    capabilities and independent project management skills.
-                  </p>
-                </div>
-                <div className="md:pl-12"></div>
-              </motion.div>
-
-              {/* Entry 4 - Internship at Brainforest */}
-              <motion.div
-                className="relative grid grid-cols-1 md:grid-cols-2 gap-8"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-              >
-                <div className="md:pr-12"></div>
-                <div className="pl-12 md:pl-16 relative">
-                  <div className="absolute left-4 md:left-0 top-0 w-3 h-3 rounded-full bg-[#2563EB] translate-x-[-6.5px]"></div>
-                  <span className="text-sm text-[#2563EB] font-medium tracking-wider uppercase mb-2 block">
-                    Apr 2023 - May 2023
-                  </span>
-                  <h3 className="text-2xl font-medium mb-3">Intern at Brainforest</h3>
-                  <p className="text-muted-foreground">
-                    Collaborated in an agile team environment, developing an AI-powered SEO optimization tool{' '}
-                    <span>(before AI was a big thing)</span> for WordPress images. Enhanced teamwork skills and expanded
-                    technical knowledge.
-                  </p>
-                </div>
-              </motion.div>
-
-              {/* Entry 5 - Education at Borås */}
-              <motion.div
-                className="relative grid grid-cols-1 md:grid-cols-2 gap-8"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-              >
-                <div className="md:text-right md:pr-16 pl-12 md:pl-0 relative">
-                  <div className="absolute left-4 md:left-auto md:right-0 top-0 w-3 h-3 rounded-full bg-[#2563EB] translate-x-[-6.5px] md:translate-x-[6.5px]"></div>
-                  <span className="text-sm text-[#2563EB] font-medium tracking-wider uppercase mb-2 block">
-                    2022 - 2024
-                  </span>
-                  <h3 className="text-2xl font-medium mb-3">Borås Yrkeshögskola</h3>
-                  <p className="text-muted-foreground">
-                    Specialized in Frontend Development with React. Enhanced UI/UX knowledge and explored various React
-                    frameworks, preparing for professional development work.
-                  </p>
-                </div>
-                <div className="md:pl-12"></div>
-              </motion.div>
-
-              {/* Entry 6 - Education Start */}
-              <motion.div
-                className="relative grid grid-cols-1 md:grid-cols-2 gap-8"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-                viewport={{ once: true, margin: '-50px' }}
-              >
-                <div className="md:pr-12"></div>
-                <div className="pl-12 md:pl-16 relative">
-                  <div className="absolute left-4 md:left-0 top-0 w-3 h-3 rounded-full bg-[#2563EB] translate-x-[-6.5px]"></div>
-                  <span className="text-sm text-[#2563EB] font-medium tracking-wider uppercase mb-2 block">
-                    2019 - 2022
-                  </span>
-                  <h3 className="text-2xl font-medium mb-3">LBS Kreativa Gymnasiet</h3>
-                  <p className="text-muted-foreground">
-                    Studied Game Development using C# and Unity. Explored GraphQL basics and learned JavaScript in my
-                    free time, laying the foundation for my web development journey.
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact CTA Section */}
-      <section id="contact" className="py-24 relative">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
           <motion.div
-            className="bg-muted/30 backdrop-blur-sm rounded-3xl p-8 md:p-12 lg:p-16 border border-border/30 relative overflow-hidden"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="relative z-20 px-6 md:px-12"
           >
-            <div className="absolute top-0 right-0 w-[30%] h-[80%] bg-gradient-to-bl from-[#2563EB]/5 via-transparent to-transparent transform origin-top-right"></div>
-            <div className="absolute top-8 right-8 w-2 h-2 rounded-full bg-[#2563EB] animate-pulse"></div>
-
-            <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto relative z-10">
-              <span className="inline-flex items-center mb-4 text-sm text-[#2563EB]/80 tracking-wide border border-[#2563EB]/20 rounded-full py-1 px-3">
-                Get in touch
-              </span>
-
-              <h2 className="text-4xl md:text-5xl font-normal tracking-tight text-foreground mb-6">
-                let's work together
-              </h2>
-
-              <p className="text-lg text-muted-foreground max-w-xl mb-10">
-                Have a project in mind? I'm always available and open to discussing new opportunities.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-5 items-center">
-                <Button size="lg" className="bg-[#2563EB] hover:bg-[#1E40AF] text-white min-w-[180px]" asChild>
-                  <a href="mailto:info@lauva.dev" className="flex items-center gap-2 justify-center">
-                    Contact me
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                </Button>
+            <div className="max-w-5xl mx-auto w-full pb-10 flex items-end lg:justify-end">
+              <div className="flex items-center">
+                {socialLinks.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <Tooltip key={s.label}>
+                      <TooltipTrigger>
+                        <a
+                          href={s.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors duration-300"
+                          aria-label={s.label}
+                        >
+                          <Icon size={20} weight="regular" />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>{s.label}</TooltipContent>
+                    </Tooltip>
+                  );
+                })}
               </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      <section id="work">
+        <div className="mx-auto w-full max-w-5xl px-6 md:px-12 py-20 md:py-28">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }} variants={stagger}>
+            <div className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div>
+                <SectionLabel>01 · Selected Work</SectionLabel>
+                <motion.h2 variants={fadeUp} custom={1} className="font-display text-3xl md:text-5xl font-bold mt-4">
+                  Things I've built.
+                </motion.h2>
+              </div>
+              <motion.p variants={fadeUp} custom={2} className="max-w-xs text-sm text-muted-foreground md:text-right">
+                Click any row to see the story.
+              </motion.p>
+            </div>
+            <div>
+              {projects.map((p, i) => {
+                const isOpen = expandedProject === p.number;
+                const techItems = p.tech
+                  .split(',')
+                  .map((item) => item.trim())
+                  .filter(Boolean);
+                return (
+                  <motion.div key={p.number} variants={fadeUp} custom={i + 3}>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedProject(isOpen ? null : p.number)}
+                      className={`group w-full grid cursor-pointer grid-cols-1 items-center gap-4 border-b border-border px-6 py-6 transition-colors duration-300 md:grid-cols-[20px_1.4fr_1fr_80px] md:gap-8  text-left ${isOpen ? 'bg-muted/30' : 'hover:bg-muted/30'}`}
+                    >
+                      <span className="font-mono text-xs text-muted-foreground">{p.number}</span>
+                      <div>
+                        <h3 className="font-display text-lg md:text-xl font-semibold group-hover:translate-x-1 transition-transform duration-300">
+                          {p.title}
+                        </h3>
+                        <p className="mt-1 font-mono line-clamp-1 text-sm text-muted-foreground capitalize">{p.type}</p>
+                      </div>
+                      <div className="scrollbar-hide hidden overflow-x-auto md:block">
+                        <div className="flex w-full min-w-max items-center gap-2 whitespace-nowrap">
+                          {techItems.map((item) => (
+                            <span
+                              key={`${p.number}-${item}`}
+                              className="border border-border bg-background px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <span className="hidden text-right font-mono text-xs text-muted-foreground md:block">
+                        {p.year}
+                      </span>
+                    </button>
+
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        height: isOpen ? 'auto' : 0,
+                        opacity: isOpen ? 1 : 0,
+                      }}
+                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="grid grid-cols-1 gap-8 border-b border-border bg-muted/30 px-6 py-8 md:grid-cols-2 md:pl-19">
+                        <div className="space-y-4">
+                          <p className="text-base leading-relaxed whitespace-pre-line text-foreground">{p.subtitle}</p>
+
+                          {p.problem ? (
+                            <div>
+                              <span className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                                Problem
+                              </span>
+                              <p className="mt-1 text-sm text-muted-foreground">{p.problem}</p>
+                            </div>
+                          ) : null}
+                          {p.outcome ? (
+                            <div>
+                              <span className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                                Outcome
+                              </span>
+                              <p className="mt-1 text-sm text-muted-foreground">{p.outcome}</p>
+                            </div>
+                          ) : null}
+                          {'testimonial' in p && p.testimonial ? (
+                            <a
+                              href="#testimonials"
+                              className={buttonVariants({
+                                variant: 'default',
+                                size: 'sm',
+                                className:
+                                  'border-border font-mono text-xs uppercase tracking-wide hover:border-foreground order-4',
+                              })}
+                            >
+                              View testimonial →
+                            </a>
+                          ) : null}
+                        </div>
+                        <div className="flex flex-col justify-between">
+                          <div>
+                            <span className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                              Stack
+                            </span>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {techItems.map((item) => (
+                                <span
+                                  key={`${p.number}-expanded-${item}`}
+                                  className="border border-border bg-background px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground"
+                                >
+                                  {item}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="mt-6">
+                            <span className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                              Preview
+                            </span>
+                            <Dialog>
+                              <DialogTrigger className="group mt-3 block w-full border border-border bg-card/70 hover:bg-card transition-colors duration-200 cursor-pointer">
+                                <div className="relative aspect-video overflow-hidden">
+                                  <img
+                                    src={p.image}
+                                    alt={`${p.title} preview`}
+                                    className="h-full w-full object-cover"
+                                    loading="lazy"
+                                  />
+                                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-200" />
+                                  <div className="absolute bottom-3 right-3 rounded-none border border-border bg-background/80 px-3 py-1 font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                                    Open
+                                  </div>
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent
+                                showCloseButton={false}
+                                className="w-full max-w-7xl border border-border bg-background p-4 shadow-2xl"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <DialogTitle className="font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                                    {p.title} — Preview
+                                  </DialogTitle>
+                                  <DialogClose className="font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground cursor-pointer">
+                                    Close
+                                  </DialogClose>
+                                </div>
+                                <div className=" border border-border bg-card ">
+                                  <img
+                                    src={p.image}
+                                    alt={`${p.title} full preview`}
+                                    className="h-full w-full object-contain"
+                                  />
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <motion.div variants={fadeUp} custom={8} className="mt-10">
+              <a
+                href="mailto:info@lauva.dev"
+                className="font-mono text-xs tracking-wide text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+              >
+                Want to see more? Let's talk →
+              </a>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="about" className="relative py-20 md:py-28 bg-card m-4 border">
+        <div className="relative z-10 mx-auto w-full max-w-5xl px-6 md:px-12">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.25 }} variants={stagger}>
+            <SectionLabel>02 · About</SectionLabel>
+
+            <motion.h2
+              variants={fadeUp}
+              custom={1}
+              className="mt-8 max-w-4xl border-l-2 border-border pl-6 font-display text-4xl font-bold tracking-tight md:pl-8 md:text-6xl "
+            >
+              I build products that
+              <br />
+              <span className="text-muted-foreground italic">feel simple to use.</span>
+            </motion.h2>
+
+            <div className="mt-14 space-y-8">
+              <motion.p
+                variants={fadeUp}
+                custom={2}
+                className="max-w-3xl text-base leading-relaxed text-muted-foreground"
+              >
+                I'm a full-stack developer with a strong frontend focus and a product mindset. I've worked in an early
+                stage startup and on freelance projects, taking features from idea to production across both frontend
+                and backend.
+              </motion.p>
+
+              <motion.div variants={fadeUp} custom={3} className="ml-auto w-full max-w-xl space-y-6 text-right">
+                <p className="text-base leading-relaxed text-muted-foreground">
+                  I enjoy moving fast, keeping things simple, and making interfaces that feel good to use. In my free
+                  time I build side projects, design dashboard UIs for fun, and sometimes make YouTube videos to share
+                  what I'm learning.
+                </p>
+
+                <div className="ml-auto border-t border-border pt-4">
+                  <div className="flex items-center justify-end">
+                    {socialLinks.map((s) => {
+                      const Icon = s.icon;
+                      return (
+                        <Tooltip key={s.label}>
+                          <TooltipTrigger>
+                            <a
+                              href={s.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors duration-300"
+                              aria-label={s.label}
+                            >
+                              <Icon size={20} weight="regular" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>{s.label}</TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-20">
-        <div className="max-w-screen-xl mx-auto px-6 md:px-12 lg:px-16 xl:px-6">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+      <section id="experience" className="py-20 md:py-28">
+        <div className="mx-auto w-full max-w-5xl px-6 md:px-12">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }} variants={stagger}>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-14">
+              <div>
+                <SectionLabel>03 · Experience</SectionLabel>
+                <motion.h2 variants={fadeUp} custom={1} className="font-display text-3xl md:text-5xl font-bold mt-4">
+                  Where I've shipped.
+                </motion.h2>
+              </div>
+              <motion.span
+                variants={fadeUp}
+                custom={1.5}
+                className="font-mono text-xs uppercase tracking-wide text-muted-foreground"
+              >
+                {new Date().getFullYear() - 2020}+ years · 4 companies
+              </motion.span>
+            </div>
+
             <div>
-              <Link to="/" className="inline-block group">
-                <span className="text-lg font-medium text-foreground tracking-tight group-hover:text-[#2563EB] transition-colors">
-                  laurynas<span className="text-[#2563EB]">.</span>
-                </span>
-              </Link>
-              <p className="mt-4 text-sm text-muted-foreground max-w-xs">
-                Full stack dev crafting sleek, scalable sites with code & taste.
-              </p>
+              {experience.map((exp, i) => (
+                <motion.div
+                  key={exp.company}
+                  variants={fadeUp}
+                  custom={i + 2}
+                  className="group grid grid-cols-1 gap-3 border-b border-border px-6 py-8 transition-colors duration-300 md:grid-cols-[180px_180px_1fr]"
+                >
+                  <div>
+                    <h3 className="font-display text-base font-semibold">{exp.company}</h3>
+                    <p className="mt-1 font-mono text-xs text-muted-foreground">{exp.role}</p>
+                  </div>
+                  <span className="self-start pt-1 font-mono text-xs tracking-wide text-muted-foreground">
+                    {exp.period}
+                  </span>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{exp.description}</p>
+                </motion.div>
+              ))}
             </div>
 
-            <div className="flex gap-6">
-              <a
-                href="https://github.com/unext1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-                aria-label="GitHub"
-              >
-                <div className="relative w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 bg-[#2563EB]/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Github className="h-5 w-5 text-muted-foreground group-hover:text-[#2563EB] transition-colors" />
+            {/* Education */}
+            <motion.div variants={fadeUp} custom={7} className="mt-10">
+              <span className="mb-6 block font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                Education
+              </span>
+              {education.map((ed) => (
+                <div
+                  key={ed.school}
+                  className="group grid grid-cols-1 gap-3 border-b border-border px-6 py-8 transition-colors duration-300 md:grid-cols-[180px_180px_1fr]"
+                >
+                  <div>
+                    <h3 className="font-display text-base font-semibold">{ed.school}</h3>
+                    <p className="mt-1 font-mono text-xs text-muted-foreground">{ed.focus}</p>
+                  </div>
+                  <span className="self-start pt-1 font-mono text-xs tracking-wide text-muted-foreground">
+                    {ed.period}
+                  </span>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{ed.note}</p>
                 </div>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/laurynas-valiulis/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-                aria-label="LinkedIn"
-              >
-                <div className="relative w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 bg-[#2563EB]/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <Linkedin className="h-5 w-5 text-muted-foreground group-hover:text-[#2563EB] transition-colors" />
-                </div>
-              </a>
-              <a
-                href="https://www.youtube.com/@Lauvadev"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-                aria-label="YouTube"
-              >
-                <div className="relative w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-5 w-5 text-muted-foreground group-hover:text-red-500 transition-colors"
-                  >
-                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-                  </svg>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-16 pt-8 border-t">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Laurynas Valiulis. All rights reserved.
-            </p>
-          </div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
-      </footer>
+      </section>
+
+      <section id="stack" className="py-20 md:py-28 bg-card m-4 border">
+        <div className="mx-auto w-full max-w-5xl px-6 md:px-12">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-14">
+              <div>
+                <SectionLabel>04 · Stack</SectionLabel>
+                <motion.h2 variants={fadeUp} custom={1} className="font-display text-3xl md:text-5xl font-bold mt-4">
+                  What I work with.
+                </motion.h2>
+              </div>
+              <motion.p variants={fadeUp} custom={1.5} className="max-w-sm text-sm text-muted-foreground md:text-right">
+                Tools I reach for daily. Always growing.
+              </motion.p>
+            </div>
+
+            <motion.div variants={fadeUp} custom={1.8} className="h-px bg-border mb-12" />
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 md:gap-20">
+              {Object.entries(stack).map(([category, items], ci) => (
+                <motion.div key={category} variants={fadeUp} custom={ci + 2}>
+                  <span className="mb-4 block font-mono text-xs uppercase tracking-wide text-muted-foreground">
+                    {category}
+                  </span>
+                  <ul className="space-y-2">
+                    {items.map((item) => (
+                      <li
+                        key={item}
+                        className="cursor-default font-mono text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="testimonials" className="py-20 md:py-28">
+        <div className="mx-auto w-full max-w-5xl px-6 md:px-12">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }} variants={stagger}>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-14">
+              <div>
+                <SectionLabel>05 · Kind Words</SectionLabel>
+                <motion.h2 variants={fadeUp} custom={1} className="font-display text-3xl md:text-5xl font-bold mt-4">
+                  What people say.
+                </motion.h2>
+              </div>
+              <motion.p variants={fadeUp} custom={1.5} className="max-w-xs text-sm text-muted-foreground md:text-right">
+                From clients & colleagues I've worked with.
+              </motion.p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px ">
+              {/* Video testimonial */}
+              <motion.div variants={fadeUp} custom={2} className="flex flex-col justify-between md:pr-8">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-mono text-xs text-muted-foreground">01</span>
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">Video</span>
+                  </div>
+                  <div className="aspect-video w-full overflow-hidden border border-border bg-background">
+                    {/** biome-ignore lint/a11y/useMediaCaption: I have explenation in p tag */}
+                    <video className="h-full w-full object-cover" controls preload="none" poster="/">
+                      <source src="/testimonial.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    I worked with Lithuanian comedian Emilis Jokūbas with over 200k+ following cross platform. In this
+                    video, he shouts me out for web development and design work, and reflects positively on the
+                    collaboration with me.
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center justify-between border-t border-border pt-6">
+                  <div>
+                    <span className="block text-sm font-semibold text-foreground">Emilis Jokūbas</span>
+                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Content Creator · 200k+ followers
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Written testimonial */}
+              <motion.div variants={fadeUp} custom={3} className="flex flex-col justify-between mt-8 md:mt-0  md:pl-8">
+                <div className="space-y-6 flex-1 flex flex-col">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-mono text-xs text-muted-foreground">02</span>
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">Written</span>
+                  </div>
+
+                  <div className="relative flex-1 justify-center items-center flex">
+                    <blockquote className="relative flex justify-center items-center ">
+                      <p className="text-base  leading-relaxed text-muted-foreground italic">
+                        " Laurynas is an exceptional full-stack developer who independently built and maintained several
+                        applications to a high standard. He proactively drove meaningful tech-stack improvements, that
+                        lead to real world benefits and business value. Highly autonomous yet very much a team player,
+                        he took ownership eagerly and consistently championed solid engineering principles while
+                        carefully managing the full application lifecycle. "
+                      </p>
+                    </blockquote>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-t border-border pt-6 mt-6 md:mt-0">
+                  <div>
+                    <span className="block text-sm font-semibold text-foreground">Jannik Meissner</span>
+                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+                      Neuralfinity · Founder
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section id="contact" className="px-4 pb-4 mt-10">
+        <motion.div
+          ref={footerRef}
+          style={{
+            scale: footerScale,
+            y: footerY,
+            opacity: footerOpacity,
+            rotateX: footerRotX,
+            transformPerspective: 500,
+          }}
+          className="origin-bottom bg-card border border-border overflow-hidden will-change-transform"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,rgba(255,255,255,0.08),transparent_60%)]" />
+            </div>
+
+            <div className="mx-auto w-full max-w-7xl px-6 pb-16 pt-24 md:px-12 md:pb-24 md:pt-32">
+              <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={stagger}>
+                <motion.h2
+                  variants={fadeUp}
+                  custom={1}
+                  className="font-display text-3xl md:text-6xl font-bold leading-[1.1] text-center"
+                >
+                  Ready to <span className="font-mono font-light text-muted-foreground">build a story</span>
+                  <br />
+                  that hits different?
+                </motion.h2>
+
+                <motion.div variants={fadeUp} custom={2} className="mt-8 flex justify-center">
+                  <a
+                    href="mailto:info@lauva.dev"
+                    className={buttonVariants({
+                      variant: 'outline',
+                      size: 'lg',
+                      className: 'group h-11 rounded-full px-10 font-mono text-xs uppercase tracking-wide',
+                    })}
+                  >
+                    Let's connect
+                    <span className="inline-block ml-2 transition-transform group-hover:translate-x-1">→</span>
+                  </a>
+                </motion.div>
+              </motion.div>
+            </div>
+
+            <div className="border-t border-border">
+              <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-4 px-6 pt-6 md:flex-row md:px-12">
+                <div className="flex items-center gap-6 flex-wrap text-center justify-center">
+                  {NAV_ITEMS.map((s) => (
+                    <a
+                      key={s}
+                      href={`#${s}`}
+                      className="inline-flex min-h-11 items-center px-1 font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {s}
+                    </a>
+                  ))}
+                </div>
+                <div className="flex items-center">
+                  {socialLinks.map((s) => {
+                    const Icon = s.icon;
+                    return (
+                      <Tooltip key={s.label}>
+                        <TooltipTrigger>
+                          <a
+                            href={s.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors duration-300"
+                            aria-label={s.label}
+                          >
+                            <Icon size={20} weight="regular" />
+                          </a>
+                        </TooltipTrigger>
+                        <TooltipContent>{s.label}</TooltipContent>
+                      </Tooltip>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* giant name + copyright */}
+            <div className="relative overflow-hidden">
+              <div className="w-full text-center font-display text-[clamp(4rem,20vw,18rem)] font-bold tracking-tighter leading-none text-muted-foreground/10 whitespace-nowrap select-none">
+                LAURYNAS
+              </div>
+              <div className="mb-4 flex justify-center">
+                <span className="font-mono text-xs uppercase flex items-center tracking-wide text-muted-foreground">
+                  © {new Date().getFullYear()} Laurynas all rights reserved.
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
     </div>
   );
 };
