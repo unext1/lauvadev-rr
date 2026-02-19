@@ -9,20 +9,20 @@ type Theme = z.infer<typeof themeSchema>;
 
 const themeCookie = createCookie('user-theme', {
   path: '/',
-  maxAge: YEAR
+  maxAge: YEAR,
 });
 
 const userThemeCookie = createTypedCookie({
   cookie: themeCookie,
-  schema: themeSchema
+  schema: themeSchema,
 });
 
 export async function getTheme(request: Request) {
   const theme = await userThemeCookie.parse(request.headers.get('Cookie'));
-  if (!theme) return 'system';
+  if (!theme) return 'dark';
   return theme;
 }
 
 export async function setTheme(theme: Theme) {
-  return userThemeCookie.serialize(theme);
+  return await userThemeCookie.serialize(theme);
 }
