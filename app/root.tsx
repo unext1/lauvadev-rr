@@ -8,17 +8,26 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData
+  useLoaderData,
 } from 'react-router';
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
 import { csrf } from './services/csrf.server';
 import { getTheme } from './services/theme.server';
 
-import tailwindStyleSheetUrl from './tailwind.css?url';
+import './tailwind.css';
 
-export const links: Route.LinksFunction = () => {
-  return [{ rel: 'stylesheet', href: tailwindStyleSheetUrl }].filter(Boolean);
-};
+export const links: Route.LinksFunction = () => [
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+  {
+    rel: 'preconnect',
+    href: 'https://fonts.gstatic.com',
+    crossOrigin: 'anonymous',
+  },
+  {
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
+  },
+];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const [csrfToken, cookieHeader] = await csrf.commitToken(request);
@@ -46,8 +55,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="min-h-screen h-screen flex flex-col">
-        <AuthenticityTokenProvider token={csrfToken}>{children}</AuthenticityTokenProvider>
+      <body className="min-h-screen h-screen flex flex-col flex-1">
+        <AuthenticityTokenProvider token={csrfToken}>
+          <main id="main-content" className="flex-1 flex flex-col">
+            {children}
+          </main>
+        </AuthenticityTokenProvider>
 
         <ScrollRestoration />
         <Scripts />
