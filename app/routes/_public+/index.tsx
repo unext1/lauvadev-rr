@@ -1024,9 +1024,9 @@ const Index = () => {
                     </video>
                   </div>
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    I worked with Lithuanian comedian Emilis Jokūbas with over 200k+ following cross platform. In this
-                    video, he shouts me out for web development and design work, and reflects positively on the
-                    collaboration with me.
+                    I worked with Lithuanian comedian Emilis Jokūbas, who has over 200K followers across platforms. In
+                    this video, he gives me a shoutout for the web development and design work I did and shares some
+                    kind words about our collaboration.
                   </p>
                 </div>
                 <div className="mt-6 flex items-center justify-between border-t border-border pt-6">
