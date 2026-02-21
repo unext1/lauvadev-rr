@@ -1,11 +1,11 @@
-import { GithubLogoIcon, LinkedinLogoIcon, YoutubeLogoIcon } from '@phosphor-icons/react';
+import { CaretDownIcon, GithubLogoIcon, LinkedinLogoIcon, YoutubeLogoIcon } from '@phosphor-icons/react';
 import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CursorGlow } from '~/components/cursor-glow';
 import { ThemeToggle } from '~/components/theme-switcher';
 import { buttonVariants } from '~/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
 import { Dialog, DialogClose, DialogContent, DialogTitle, DialogTrigger } from '~/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '~/components/ui/tooltip';
 import { cn } from '~/utils';
 import type { Route } from './+types';
 
@@ -114,7 +114,7 @@ const projects = [
   {
     number: '04',
     title: 'Dashboard Design',
-    subtitle: 'A simple dashboard UI concept.',
+    subtitle: 'A dashboard UI concept.',
     problem: '',
     outcome: '',
     tech: 'React Router v7, Tailwind CSS, Shadcn',
@@ -124,7 +124,7 @@ const projects = [
   },
   {
     number: '05',
-    title: 'Field Service App (SaaS)',
+    title: 'Field Service App',
     subtitle: 'SaaS app for planning, assigning, and tracking field service work.',
     problem: 'Teams needed a simpler way to manage tasks, people, and progress in the field.',
     outcome: 'Built task creation and assignment flows with a kanban board using optimistic UI.',
@@ -191,7 +191,7 @@ const education = [
     period: '2019 — 2022',
     school: 'LBS Helsingborg',
     focus: 'Game Development',
-    note: 'Built a strong foundation in programming, problem solving, and system thinking. Developed several small games using Unity, focusing on game logic and interactive systems. Independently explored modern web technologies, which led to a transition into web and full-stack development.',
+    note: 'Built a strong foundation in programming, problem solving, and system thinking. Developed several small games using Unity. Independently explored modern web technologies, which led to a transition into web and full-stack development.',
   },
 ];
 
@@ -395,9 +395,9 @@ const Index = () => {
             {/* Right section - Email & Theme Toggle */}
             <div className="flex justify-end items-center gap-2 md:gap-4">
               <Tooltip>
-                <TooltipTrigger>
+                <TooltipTrigger aria-label="Contact via email">
                   <motion.div
-                    className={'h-10 hidden lg:flex items-center gap-3 py-2 px-5'}
+                    className={'h-11 hidden lg:flex items-center gap-3 py-2 px-6'}
                     whileHover={{ scale: 1.03 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 20 }}
                   >
@@ -519,7 +519,7 @@ const Index = () => {
           ref={heroRef}
           onPointerMove={onMove}
           onPointerLeave={onLeave}
-          className="relative flex pt-10 min-h-full flex-1 flex-col overflow-hidden"
+          className="relative flex pt-6 min-h-full flex-1 flex-col overflow-hidden"
         >
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_45%,rgba(255,255,255,0.04),transparent_70%)]" />
@@ -579,10 +579,10 @@ const Index = () => {
                 <div className="flex lg:items-end w-full flex-col">
                   <motion.div variants={fadeUp} custom={3} className="mt-10 flex items-center gap-6">
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger aria-label="Contact via email">
                         <a
                           href="mailto:info@lauva.dev"
-                          className="order-2 inline-flex min-h-11 items-center font-mono text-xs tracking-wide text-muted-foreground transition-colors hover:text-foreground lg:order-1"
+                          className="order-2 inline-flex h-11 items-center px-4 font-mono text-xs tracking-wide text-muted-foreground transition-colors hover:text-foreground lg:order-1"
                         >
                           info@lauva.dev
                         </a>
@@ -612,8 +612,19 @@ const Index = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="relative z-20 px-6 md:px-12"
           >
-            <div className="max-w-5xl mx-auto w-full pb-10 flex items-end lg:justify-end">
-              <div className="flex items-center">
+            <div className="max-w-5xl mx-auto w-full pb-6 flex items-center justify-between">
+              <motion.div
+                variants={fadeUp}
+                custom={1.5}
+                className="lg:order-1 order-2 inline-flex items-center gap-2 border border-border bg-card px-4 py-1.5"
+              >
+                <span className="relative flex w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/40" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground" />
+                </span>
+                <span className="font-mono text-[10px] uppercase  text-muted-foreground">Available for work</span>
+              </motion.div>
+              <div className="lg:order-2 order-1 flex items-center">
                 {socialLinks.map((s) => {
                   const Icon = s.icon;
                   return (
@@ -650,7 +661,7 @@ const Index = () => {
                 </motion.h2>
               </div>
               <motion.p variants={fadeUp} custom={2} className="max-w-xs text-sm text-muted-foreground md:text-right">
-                Click any row to see the story.
+                Click any row to expand.
               </motion.p>
             </div>
             <div>
@@ -665,14 +676,27 @@ const Index = () => {
                     <button
                       type="button"
                       onClick={() => setExpandedProject(isOpen ? null : p.number)}
-                      className={`group w-full grid cursor-pointer grid-cols-1 items-center gap-4 border-b border-border px-6 py-6 transition-colors duration-300 md:grid-cols-[20px_1.4fr_1fr_80px] md:gap-8  text-left ${isOpen ? 'bg-muted/30' : 'hover:bg-muted/30'}`}
+                      className={`group w-full grid cursor-pointer grid-cols-[1fr_auto] items-center gap-4 border-b border-border px-6 py-6 transition-all duration-300 md:grid-cols-[180px_1fr_80px_32px] md:gap-3 text-left ${isOpen ? 'bg-card/50' : 'hover:bg-card/50'}`}
                     >
-                      <span className="font-mono text-xs text-muted-foreground">{p.number}</span>
                       <div>
-                        <h3 className="font-display text-lg md:text-xl font-semibold group-hover:translate-x-1 transition-transform duration-300">
-                          {p.title}
+                        <h3 className="flex items-center font-display text-base font-semibold text-foreground">
+                          <span
+                            aria-hidden="true"
+                            className={cn(
+                              'h-px w-0 bg-foreground/70 transition-all duration-300 ease-out group-hover:w-3 group-hover:mr-2',
+                              isOpen && 'w-3 mr-2',
+                            )}
+                          />
+                          <span
+                            className={cn(
+                              'transition-opacity duration-300 group-hover:opacity-95',
+                              isOpen && 'opacity-95',
+                            )}
+                          >
+                            {p.title}
+                          </span>
                         </h3>
-                        <p className="mt-1 font-mono line-clamp-1 text-sm text-muted-foreground capitalize">{p.type}</p>
+                        <p className="mt-1 font-mono line-clamp-1 text-xs text-muted-foreground capitalize">{p.type}</p>
                       </div>
                       <div className="scrollbar-hide hidden overflow-x-auto md:block">
                         <div className="flex w-full min-w-max items-center gap-2 whitespace-nowrap">
@@ -689,6 +713,16 @@ const Index = () => {
                       <span className="hidden text-right font-mono text-xs text-muted-foreground md:block">
                         {p.year}
                       </span>
+                      <motion.div
+                        className="flex items-center justify-center"
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <CaretDownIcon
+                          size={16}
+                          className={isOpen ? 'text-foreground' : 'text-muted-foreground group-hover:text-foregroun'}
+                        />
+                      </motion.div>
                     </button>
 
                     <motion.div
@@ -700,9 +734,9 @@ const Index = () => {
                       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                       className="overflow-hidden"
                     >
-                      <div className="grid grid-cols-1 gap-8 border-b border-border bg-muted/30 px-6 py-8 md:grid-cols-2 md:pl-19">
+                      <div className="grid grid-cols-1 gap-8 border-b border-border bg-card/50 px-6 py-8 md:grid-cols-2">
                         <div className="space-y-4">
-                          <p className="text-base leading-relaxed whitespace-pre-line text-foreground">{p.subtitle}</p>
+                          <p className="text-sm leading-relaxed whitespace-pre-line text-foreground">{p.subtitle}</p>
 
                           {p.problem ? (
                             <div>
@@ -728,7 +762,6 @@ const Index = () => {
                                 rel="noopener noreferrer"
                                 className={buttonVariants({
                                   variant: 'default',
-                                  size: 'sm',
                                   className:
                                     'border-border font-mono text-xs uppercase tracking-wide hover:border-foreground',
                                 })}
@@ -741,7 +774,6 @@ const Index = () => {
                                 href="#testimonials"
                                 className={buttonVariants({
                                   variant: 'secondary',
-                                  size: 'sm',
                                   className:
                                     'border-border font-mono text-xs uppercase tracking-wide hover:border-foreground',
                                 })}
@@ -889,7 +921,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section id="experience" className="py-20 md:py-28">
+      <section id="experience" className="py-20 md:py-28 bg-linear-to-t via-background from-card to-background">
         <div className="mx-auto w-full max-w-5xl px-6 md:px-12">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }} variants={stagger}>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-14">
@@ -904,7 +936,11 @@ const Index = () => {
                 custom={1.5}
                 className="font-mono text-xs uppercase tracking-wide text-muted-foreground"
               >
-                {new Date().getFullYear() - 2020}+ years · 4 companies
+                {new Date().getFullYear() - 2020}+ years ·{' '}
+                <Tooltip>
+                  <TooltipTrigger>4 companies</TooltipTrigger>
+                  <TooltipContent>Your company could be next!</TooltipContent>
+                </Tooltip>
               </motion.span>
             </div>
 
@@ -914,15 +950,19 @@ const Index = () => {
                   key={exp.company}
                   variants={fadeUp}
                   custom={i + 2}
-                  className="group grid grid-cols-1 gap-3 border-b border-border px-6 py-8 transition-colors duration-300 md:grid-cols-[180px_180px_1fr]"
+                  className="group grid grid-cols-1 gap-3 border-b border-border px-6 py-8 hover:bg-muted/20 md:grid-cols-[180px_180px_1fr] md:items-center"
                 >
                   <div>
-                    <h3 className="font-display text-base font-semibold">{exp.company}</h3>
+                    <h3 className="flex items-center font-display text-base font-semibold text-foreground">
+                      <span
+                        aria-hidden="true"
+                        className="h-px w-0 bg-foreground/70 transition-all duration-300 ease-out group-hover:w-3 group-hover:mr-2"
+                      />
+                      <span className="transition-opacity duration-300 group-hover:opacity-95">{exp.company}</span>
+                    </h3>
                     <p className="mt-1 font-mono text-xs text-muted-foreground">{exp.role}</p>
                   </div>
-                  <span className="self-start pt-1 font-mono text-xs tracking-wide text-muted-foreground">
-                    {exp.period}
-                  </span>
+                  <span className="font-mono text-xs tracking-wide text-muted-foreground">{exp.period}</span>
                   <p className="text-sm leading-relaxed text-muted-foreground">{exp.description}</p>
                 </motion.div>
               ))}
@@ -936,15 +976,19 @@ const Index = () => {
               {education.map((ed) => (
                 <div
                   key={ed.school}
-                  className="group grid grid-cols-1 gap-3 border-b border-border px-6 py-8 transition-colors duration-300 md:grid-cols-[180px_180px_1fr]"
+                  className="group grid grid-cols-1 gap-3 border-b border-border px-6 py-8 transition-all duration-300 hover:bg-muted/20 md:grid-cols-[180px_180px_1fr] md:items-center"
                 >
                   <div>
-                    <h3 className="font-display text-base font-semibold">{ed.school}</h3>
+                    <h3 className="flex items-center font-display text-base font-semibold text-foreground">
+                      <span
+                        aria-hidden="true"
+                        className="h-px w-0 bg-foreground/70 transition-all duration-300 ease-out group-hover:w-3 group-hover:mr-2"
+                      />
+                      <span className="transition-opacity duration-300 group-hover:opacity-95">{ed.school}</span>
+                    </h3>
                     <p className="mt-1 font-mono text-xs text-muted-foreground">{ed.focus}</p>
                   </div>
-                  <span className="self-start pt-1 font-mono text-xs tracking-wide text-muted-foreground">
-                    {ed.period}
-                  </span>
+                  <span className="font-mono text-xs tracking-wide text-muted-foreground">{ed.period}</span>
                   <p className="text-sm leading-relaxed text-muted-foreground">{ed.note}</p>
                 </div>
               ))}
@@ -953,7 +997,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section id="stack" className="py-20 md:py-28 bg-card m-4 border">
+      <section id="stack" className="py-20 md:py-28 bg-linear-to-b from-card to-background">
         <div className="mx-auto w-full max-w-5xl px-6 md:px-12">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} variants={stagger}>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-14">
@@ -968,24 +1012,37 @@ const Index = () => {
               </motion.p>
             </div>
 
-            <motion.div variants={fadeUp} custom={1.8} className="h-px bg-border mb-12" />
+            {/* <motion.div variants={fadeUp} custom={1.8} className="h-px bg-border " /> */}
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 md:gap-20">
+            <div className="">
               {Object.entries(stack).map(([category, items], ci) => (
-                <motion.div key={category} variants={fadeUp} custom={ci + 2}>
-                  <span className="mb-4 block font-mono text-xs uppercase tracking-wide text-muted-foreground">
-                    {category}
-                  </span>
-                  <ul className="space-y-2">
-                    {items.map((item) => (
-                      <li
+                <motion.div
+                  key={category}
+                  variants={fadeUp}
+                  custom={ci + 2}
+                  className="group grid grid-cols-1 gap-5 border-b border-border px-5 py-4 transition-colors duration-200 last:border-b-0 md:grid-cols-[180px_1fr] md:items-start md:gap-3 md:px-6"
+                >
+                  <div className="flex items-center gap-3 md:pt-1">
+                    <span className="font-mono text-xs uppercase tracking-wider text-foreground">{category}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+                      ({items.length})
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2.5">
+                    {items.map((item, ii) => (
+                      <motion.span
                         key={item}
-                        className="cursor-default font-mono text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                        initial={{ opacity: 0, y: 8 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.28, delay: ci * 0.08 + ii * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                        className="cursor-default border border-border bg-background px-3 py-1.5 font-mono text-xs tracking-wide text-muted-foreground"
                       >
                         {item}
-                      </li>
+                      </motion.span>
                     ))}
-                  </ul>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -1019,7 +1076,7 @@ const Index = () => {
                   </div>
                   <div className="aspect-video w-full overflow-hidden border border-border bg-background">
                     {/** biome-ignore lint/a11y/useMediaCaption: I have explenation in p tag */}
-                    <video className="h-full w-full object-cover" controls preload="none" poster="/">
+                    <video className="h-full w-full object-cover" controls preload="metadata" poster="/">
                       <source src="/testimonial.mp4" type="video/mp4" />
                     </video>
                   </div>
@@ -1051,11 +1108,11 @@ const Index = () => {
                   <div className="relative flex-1 justify-center items-center flex">
                     <blockquote className="relative flex justify-center items-center ">
                       <p className="text-base  leading-relaxed text-muted-foreground italic">
-                        " Laurynas is an exceptional full-stack developer who independently built and maintained several
+                        "Laurynas is an exceptional full-stack developer who independently built and maintained several
                         applications to a high standard. He proactively drove meaningful tech-stack improvements, that
                         lead to real world benefits and business value. Highly autonomous yet very much a team player,
                         he took ownership eagerly and consistently championed solid engineering principles while
-                        carefully managing the full application lifecycle. "
+                        carefully managing the full application lifecycle."
                       </p>
                     </blockquote>
                   </div>
@@ -1098,7 +1155,7 @@ const Index = () => {
                   custom={1}
                   className="font-display text-3xl md:text-6xl font-bold leading-[1.1] text-center"
                 >
-                  Ready to <span className="font-mono font-light text-muted-foreground">build a story</span>
+                  Ready to <span className="italic font-bold text-muted-foreground">build a story</span>
                   <br />
                   that hits different?
                 </motion.h2>
